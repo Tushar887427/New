@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Directory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            padding-top: 30px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+        }
+
+        .staff-avatar {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: white;
+        }
+
+        .staff-info {
+            padding: 20px;
+        }
+
+        .staff-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .staff-position {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .staff-contact {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .contact-item {
+            margin-bottom: 8px;
+        }
+
+        .contact-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        footer p {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .staff-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Staff Directory</h1>
+            <p>Meet Our Team</p>
+        </header>
+
+        <div class="staff-grid">
+            <div class="staff-card">
+                <div class="staff-avatar">👔</div>
+                <div class="staff-info">
+                    <div class="staff-name">John Smith</div>
+                    <div class="staff-position">Director</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> john.smith@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 123-4567
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 101
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-avatar">👩‍💼</div>
+                <div class="staff-info">
+                    <div class="staff-name">Sarah Johnson</div>
+                    <div class="staff-position">Manager - Operations</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> sarah.johnson@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 234-5678
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 205
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-avatar">👨‍💻</div>
+                <div class="staff-info">
+                    <div class="staff-name">Michael Chen</div>
+                    <div class="staff-position">Senior Developer</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> michael.chen@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 345-6789
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 301
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-avatar">👩‍🔬</div>
+                <div class="staff-info">
+                    <div class="staff-name">Emily Davis</div>
+                    <div class="staff-position">Research Specialist</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> emily.davis@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 456-7890
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 302
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-avatar">👨‍💼</div>
+                <div class="staff-info">
+                    <div class="staff-name">Robert Martinez</div>
+                    <div class="staff-position">Sales Manager</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> robert.martinez@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 567-8901
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 210
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-avatar">👩‍⚕️</div>
+                <div class="staff-info">
+                    <div class="staff-name">Lisa Anderson</div>
+                    <div class="staff-position">HR Coordinator</div>
+                    <div class="staff-contact">
+                        <div class="contact-item">
+                            <span class="contact-label">Email:</span> lisa.anderson@company.com
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Phone:</span> (555) 678-9012
+                        </div>
+                        <div class="contact-item">
+                            <span class="contact-label">Office:</span> Room 202
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Company Staff Directory. Last updated: 2026-01-14 03:11:29 UTC</p>
+        </footer>
+    </div>
+</body>
+</html>
