@@ -56,6 +56,35 @@ A minimalist, visually appealing school management application designed for scho
    - Username: `admin`
    - Password: `admin123`
 
+## 📱 Android APK
+
+The app is also available as an Android APK! 
+
+### Download APK
+
+The APK is automatically built via GitHub Actions on every push:
+
+1. Go to the [Actions](https://github.com/Tushar887427/New/actions) tab
+2. Click on the latest "Build Android APK" workflow run
+3. Download the `school-management-debug.apk` artifact
+
+### Build APK Locally
+
+```bash
+# Install dependencies
+npm install
+
+# Build and sync
+npm run build
+npm run cap:sync
+
+# Build APK
+cd android
+./gradlew assembleDebug
+```
+
+📖 **Full guide**: See [BUILD_APK.md](BUILD_APK.md) for detailed instructions
+
 ## 📁 Project Structure
 
 ```
