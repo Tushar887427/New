@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+        }
+
+        .search-box button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+            color: white;
+            border-color: #ba68c8;
+        }
+
+        .staff-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .staff-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .staff-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .staff-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #ce93d8 0%, #ba68c8 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .staff-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .staff-position {
+            color: #9c27b0;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        .staff-info {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .staff-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e8f5e9;
+            color: #4caf50;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+
+        .staff-status.inactive {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stat-box .number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #9c27b0;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            background: white;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .staff-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link active">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>Staff</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Statistics -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <h3>Total Staff</h3>
+                    <div class="number" id="totalStaff">6</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Active</h3>
+                    <div class="number" id="activeStaff">5</div>
+                </div>
+                <div class="stat-box">
+                    <h3>On Leave</h3>
+                    <div class="number" id="leaveStaff">1</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Search Results</h3>
+                    <div class="number" id="searchResults">6</div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search by name, email, position..."
+                    >
+                    <button onclick="performSearch()">Search</button>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" onclick="filterByStatus('all')">All Staff</button>
+                    <button class="filter-btn" onclick="filterByStatus('active')">Active</button>
+                    <button class="filter-btn" onclick="filterByStatus('leave')">On Leave</button>
+                    <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Staff Grid -->
+            <div id="staffContainer" class="staff-grid"></div>
+
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>No staff members found matching your search criteria.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Sample staff data
+        const staffData = [
+            {
+                id: 'STF001',
+                name: 'John Smith',
+                email: 'john.s@school.edu',
+                phone: '+1 (555) 123-4567',
+                position: 'Principal',
+                department: 'Administration',
+                status: 'active'
+            },
+            {
+                id: 'STF002',
+                name: 'Sarah Johnson',
+                email: 'sarah.j@school.edu',
+                phone: '+1 (555) 234-5678',
+                position: 'Vice Principal',
+                department: 'Administration',
+                status: 'active'
+            },
+            {
+                id: 'STF003',
+                name: 'Michael Chen',
+                email: 'michael.c@school.edu',
+                phone: '+1 (555) 345-6789',
+                position: 'Math Teacher',
+                department: 'Mathematics',
+                status: 'active'
+            },
+            {
+                id: 'STF004',
+                name: 'Emily Davis',
+                email: 'emily.d@school.edu',
+                phone: '+1 (555) 456-7890',
+                position: 'Science Teacher',
+                department: 'Science',
+                status: 'leave'
+            },
+            {
+                id: 'STF005',
+                name: 'Robert Martinez',
+                email: 'robert.m@school.edu',
+                phone: '+1 (555) 567-8901',
+                position: 'English Teacher',
+                department: 'English',
+                status: 'active'
+            },
+            {
+                id: 'STF006',
+                name: 'Lisa Anderson',
+                email: 'lisa.a@school.edu',
+                phone: '+1 (555) 678-9012',
+                position: 'School Counselor',
+                department: 'Counseling',
+                status: 'active'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentSearchTerm = '';
+
+        function init() {
+            updateStatistics();
+            displayStaff(staffData);
+        }
+
+        function updateStatistics() {
+            const total = staffData.length;
+            const active = staffData.filter(s => s.status === 'active').length;
+            const leave = staffData.filter(s => s.status === 'leave').length;
+
+            document.getElementById('totalStaff').textContent = total;
+            document.getElementById('activeStaff').textContent = active;
+            document.getElementById('leaveStaff').textContent = leave;
+            document.getElementById('searchResults').textContent = getFilteredStaff().length;
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function displayStaff(staff) {
+            const container = document.getElementById('staffContainer');
+            const noResults = document.getElementById('noResults');
+
+            if (staff.length === 0) {
+                container.innerHTML = '';
+                noResults.style.display = 'block';
+                document.getElementById('searchResults').textContent = '0';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            document.getElementById('searchResults').textContent = staff.length;
+
+            container.innerHTML = staff.map(member => `
+                <div class="staff-card" onclick="viewStaff('${member.id}')">
+                    <div class="staff-avatar">${getInitials(member.name)}</div>
+                    <div class="staff-name">${member.name}</div>
+                    <div class="staff-position">${member.position}</div>
+                    <div class="staff-info"><strong>ID:</strong> ${member.id}</div>
+                    <div class="staff-info"><strong>Dept:</strong> ${member.department}</div>
+                    <div style="text-align: center;">
+                        <span class="staff-status ${member.status === 'leave' ? 'inactive' : ''}">
+                            ${member.status === 'active' ? '✓ Active' : '⚠ On Leave'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFilteredStaff() {
+            let filtered = staffData;
+
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === currentFilter);
+            }
+
+            if (currentSearchTerm) {
+                const term = currentSearchTerm.toLowerCase();
+                filtered = filtered.filter(s =>
+                    s.name.toLowerCase().includes(term) ||
+                    s.email.toLowerCase().includes(term) ||
+                    s.id.toLowerCase().includes(term) ||
+                    s.position.toLowerCase().includes(term) ||
+                    s.department.toLowerCase().includes(term)
+                );
+            }
+
+            return filtered;
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput').value;
+            currentSearchTerm = searchInput;
+            const filtered = getFilteredStaff();
+            displayStaff(filtered);
+            updateStatistics();
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            updateFilterButtons(event.target);
+            const filtered = getFilteredStaff();
+            displayStaff(filtered);
+            updateStatistics();
+        }
+
+        function updateFilterButtons(activeBtn) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            activeBtn.classList.add('active');
+        }
+
+        function clearFilters() {
+            currentFilter = 'all';
+            currentSearchTerm = '';
+            document.getElementById('searchInput').value = '';
+            displayStaff(staffData);
+            updateStatistics();
+
+            document.querySelectorAll('.filter-btn').forEach((btn, index) => {
+                if (index === 0) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function viewStaff(id) {
+            window.location.href = `staff-info.html?id=${id}`;
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
