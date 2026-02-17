@@ -261,9 +261,9 @@
                 </div>
 
                 <div class="filter-buttons">
-                    <button class="filter-btn active" onclick="filterByStatus('all')">All Students</button>
-                    <button class="filter-btn" onclick="filterByStatus('active')">Active</button>
-                    <button class="filter-btn" onclick="filterByStatus('inactive')">Inactive</button>
+                    <button class="filter-btn active" data-status="all" onclick="filterByStatus('all'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">All Students</button>
+                    <button class="filter-btn" data-status="active" onclick="filterByStatus('active'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Active</button>
+                    <button class="filter-btn" data-status="inactive" onclick="filterByStatus('inactive'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Inactive</button>
                     <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
                 </div>
             </div>
@@ -440,17 +440,9 @@
 
         function filterByStatus(status) {
             currentFilter = status;
-            updateFilterButtons(event.target);
             const filtered = getFilteredStudents();
             displayStudents(filtered);
             updateStatistics();
-        }
-
-        function updateFilterButtons(activeBtn) {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            activeBtn.classList.add('active');
         }
 
         function clearFilters() {

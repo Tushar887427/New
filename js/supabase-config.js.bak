@@ -91,10 +91,6 @@ async function addStudent(studentData) {
 
 // Update student
 async function updateStudent(id, updates) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase
             .from('students')
@@ -112,10 +108,6 @@ async function updateStudent(id, updates) {
 
 // Delete student
 async function deleteStudent(id) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return false;
-    }
     try {
         const { error } = await supabase
             .from('students')
@@ -132,10 +124,6 @@ async function deleteStudent(id) {
 
 // Get all staff
 async function getAllStaff() {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return [];
-    }
     try {
         const { data, error } = await supabase
             .from('staff')
@@ -152,10 +140,6 @@ async function getAllStaff() {
 
 // Get staff by ID
 async function getStaffById(id) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase
             .from('staff')
@@ -173,10 +157,6 @@ async function getStaffById(id) {
 
 // Add new staff member
 async function addStaff(staffData) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase
             .from('staff')
@@ -193,10 +173,6 @@ async function addStaff(staffData) {
 
 // Get all documents
 async function getAllDocuments() {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return [];
-    }
     try {
         const { data, error } = await supabase
             .from('documents')
@@ -213,10 +189,6 @@ async function getAllDocuments() {
 
 // Upload document
 async function uploadDocument(file, metadata) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         // Upload file to storage
         const fileName = `${Date.now()}_${file.name}`;
@@ -251,10 +223,6 @@ async function uploadDocument(file, metadata) {
 
 // Get school info
 async function getSchoolInfo() {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase
             .from('school_info')
@@ -271,10 +239,6 @@ async function getSchoolInfo() {
 
 // Update school info
 async function updateSchoolInfo(updates) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase
             .from('school_info')
@@ -291,10 +255,6 @@ async function updateSchoolInfo(updates) {
 
 // User authentication
 async function signIn(email, password) {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
@@ -310,10 +270,6 @@ async function signIn(email, password) {
 }
 
 async function signOut() {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return false;
-    }
     try {
         const { error } = await supabase.auth.signOut();
         if (error) throw error;
@@ -326,10 +282,6 @@ async function signOut() {
 
 // Check if user is authenticated
 async function getCurrentUser() {
-    if (!isSupabaseConfigured()) {
-        console.warn('Supabase not configured');
-        return null;
-    }
     try {
         const { data: { user } } = await supabase.auth.getUser();
         return user;
