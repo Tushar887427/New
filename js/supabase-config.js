@@ -10,17 +10,31 @@
 
 // Supabase Configuration
 const SUPABASE_CONFIG = {
-    url: 'YOUR_SUPABASE_PROJECT_URL', // e.g., 'https://xxxxx.supabase.co'
-    anonKey: 'YOUR_SUPABASE_ANON_KEY' // Your anon/public key
+    url: 'https://ficyijhgwrttbizdhyrv.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZpY3lpamhnd3J0dGJpemRoeXJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDI3NDgsImV4cCI6MjA4Njg3ODc0OH0.f-1CB3KPOMEX9epuoyixbs_eb-jZmkeLTT-upFD7V80'
 };
 
-// Uncomment after adding your credentials and including Supabase JS library
-// <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-// const supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+// Initialize Supabase client (requires Supabase JS library to be loaded first)
+// Make sure to include: <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+let supabase = null;
+
+// Initialize Supabase when the library is available
+function initSupabase() {
+    if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
+        supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+        console.log('Supabase client initialized successfully');
+        return true;
+    }
+    console.warn('Supabase library not loaded yet');
+    return false;
+}
 
 // Check if Supabase is configured
 function isSupabaseConfigured() {
-    return typeof supabase !== 'undefined' && supabase !== null;
+    if (supabase === null && typeof window.supabase !== 'undefined') {
+        initSupabase();
+    }
+    return supabase !== null;
 }
 
 /**
