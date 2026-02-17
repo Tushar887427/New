@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #42a5f5;
+            box-shadow: 0 0 0 3px rgba(66, 165, 245, 0.1);
+        }
+
+        .search-box button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            color: white;
+            border-color: #42a5f5;
+        }
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .student-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .student-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 0 auto 15px;
+        }
+
+        .student-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .student-info {
+            color: #666;
+            font-size: 0.9em;
+            margin: 5px 0;
+            text-align: center;
+        }
+
+        .student-status {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e8f5e9;
+            color: #4caf50;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+
+        .student-status.inactive {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .stat-box .number {
+            font-size: 2em;
+            font-weight: 700;
+            color: #1976d2;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            background: white;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link active">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>Students</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin</span>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Statistics -->
+            <div class="stats-row">
+                <div class="stat-box">
+                    <h3>Total Students</h3>
+                    <div class="number" id="totalStudents">8</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Active</h3>
+                    <div class="number" id="activeStudents">6</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Inactive</h3>
+                    <div class="number" id="inactiveStudents">2</div>
+                </div>
+                <div class="stat-box">
+                    <h3>Search Results</h3>
+                    <div class="number" id="searchResults">8</div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Search by name, email, or ID..."
+                    >
+                    <button onclick="performSearch()">Search</button>
+                </div>
+
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-status="all" onclick="filterByStatus('all'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">All Students</button>
+                    <button class="filter-btn" data-status="active" onclick="filterByStatus('active'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Active</button>
+                    <button class="filter-btn" data-status="inactive" onclick="filterByStatus('inactive'); this.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); this.classList.add('active');">Inactive</button>
+                    <button class="filter-btn" onclick="clearFilters()">Clear Filters</button>
+                </div>
+            </div>
+
+            <!-- Students Grid -->
+            <div id="studentsContainer" class="students-grid"></div>
+
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>No students found matching your search criteria.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // Sample student data
+        const studentsData = [
+            {
+                id: 'STU001',
+                name: 'Alice Johnson',
+                email: 'alice.j@school.edu',
+                phone: '+1 (555) 123-4567',
+                grade: '10th Grade',
+                gpa: '3.8',
+                status: 'active'
+            },
+            {
+                id: 'STU002',
+                name: 'Bob Smith',
+                email: 'bob.s@school.edu',
+                phone: '+1 (555) 234-5678',
+                grade: '11th Grade',
+                gpa: '3.5',
+                status: 'active'
+            },
+            {
+                id: 'STU003',
+                name: 'Carol Williams',
+                email: 'carol.w@school.edu',
+                phone: '+1 (555) 345-6789',
+                grade: '9th Grade',
+                gpa: '3.9',
+                status: 'active'
+            },
+            {
+                id: 'STU004',
+                name: 'David Brown',
+                email: 'david.b@school.edu',
+                phone: '+1 (555) 456-7890',
+                grade: '12th Grade',
+                gpa: '3.6',
+                status: 'inactive'
+            },
+            {
+                id: 'STU005',
+                name: 'Emma Davis',
+                email: 'emma.d@school.edu',
+                phone: '+1 (555) 567-8901',
+                grade: '10th Grade',
+                gpa: '3.7',
+                status: 'active'
+            },
+            {
+                id: 'STU006',
+                name: 'Frank Miller',
+                email: 'frank.m@school.edu',
+                phone: '+1 (555) 678-9012',
+                grade: '11th Grade',
+                gpa: '3.4',
+                status: 'active'
+            },
+            {
+                id: 'STU007',
+                name: 'Grace Wilson',
+                email: 'grace.w@school.edu',
+                phone: '+1 (555) 789-0123',
+                grade: '9th Grade',
+                gpa: '3.8',
+                status: 'inactive'
+            },
+            {
+                id: 'STU008',
+                name: 'Henry Taylor',
+                email: 'henry.t@school.edu',
+                phone: '+1 (555) 890-1234',
+                grade: '12th Grade',
+                gpa: '3.5',
+                status: 'active'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentSearchTerm = '';
+
+        function init() {
+            updateStatistics();
+            displayStudents(studentsData);
+        }
+
+        function updateStatistics() {
+            const total = studentsData.length;
+            const active = studentsData.filter(s => s.status === 'active').length;
+            const inactive = studentsData.filter(s => s.status === 'inactive').length;
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('activeStudents').textContent = active;
+            document.getElementById('inactiveStudents').textContent = inactive;
+            document.getElementById('searchResults').textContent = getFilteredStudents().length;
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+
+        function displayStudents(students) {
+            const container = document.getElementById('studentsContainer');
+            const noResults = document.getElementById('noResults');
+
+            if (students.length === 0) {
+                container.innerHTML = '';
+                noResults.style.display = 'block';
+                document.getElementById('searchResults').textContent = '0';
+                return;
+            }
+
+            noResults.style.display = 'none';
+            document.getElementById('searchResults').textContent = students.length;
+
+            container.innerHTML = students.map(student => `
+                <div class="student-card" onclick="viewStudent('${student.id}')">
+                    <div class="student-avatar">${getInitials(student.name)}</div>
+                    <div class="student-name">${student.name}</div>
+                    <div class="student-info"><strong>ID:</strong> ${student.id}</div>
+                    <div class="student-info"><strong>Grade:</strong> ${student.grade}</div>
+                    <div class="student-info"><strong>GPA:</strong> ${student.gpa}</div>
+                    <div style="text-align: center;">
+                        <span class="student-status ${student.status === 'inactive' ? 'inactive' : ''}">
+                            ${student.status === 'active' ? '✓ Active' : '✗ Inactive'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getFilteredStudents() {
+            let filtered = studentsData;
+
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === currentFilter);
+            }
+
+            if (currentSearchTerm) {
+                const term = currentSearchTerm.toLowerCase();
+                filtered = filtered.filter(s =>
+                    s.name.toLowerCase().includes(term) ||
+                    s.email.toLowerCase().includes(term) ||
+                    s.id.toLowerCase().includes(term) ||
+                    s.grade.toLowerCase().includes(term)
+                );
+            }
+
+            return filtered;
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput').value;
+            currentSearchTerm = searchInput;
+            const filtered = getFilteredStudents();
+            displayStudents(filtered);
+            updateStatistics();
+        }
+
+        function filterByStatus(status) {
+            currentFilter = status;
+            const filtered = getFilteredStudents();
+            displayStudents(filtered);
+            updateStatistics();
+        }
+
+        function clearFilters() {
+            currentFilter = 'all';
+            currentSearchTerm = '';
+            document.getElementById('searchInput').value = '';
+            displayStudents(studentsData);
+            updateStatistics();
+
+            document.querySelectorAll('.filter-btn').forEach((btn, index) => {
+                if (index === 0) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function viewStudent(id) {
+            window.location.href = `student-info.html?id=${id}`;
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

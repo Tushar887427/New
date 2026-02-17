@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link active">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>Settings</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin User</span>
+            </div>
+        </header>
+
+        <!-- Settings Content -->
+        <div class="content-area">
+            <!-- Settings Header Card -->
+            <div class="welcome-card">
+                <h2>System Settings ⚙️</h2>
+                <p>Configure your school management system</p>
+            </div>
+
+            <!-- Google Sheets Integration -->
+            <div class="section-card">
+                <h2>Google Sheets Integration</h2>
+                <p style="color: #666; margin-bottom: 20px;">Import student and staff data directly from Google Sheets</p>
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Google Sheets URL</label>
+                        <input type="url" id="sheetsUrl" placeholder="https://docs.google.com/spreadsheets/d/..." style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Import Type</label>
+                        <select id="importType" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                            <option value="">Select data type</option>
+                            <option value="students">Student Data</option>
+                            <option value="staff">Staff Data</option>
+                            <option value="both">Both Students & Staff</option>
+                        </select>
+                    </div>
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #42a5f5;">
+                        <p style="margin: 0; color: #1976d2; font-size: 0.9em;">
+                            <strong>📝 Note:</strong> Make sure your Google Sheet is publicly accessible or shared with appropriate permissions.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="importFromSheets()" style="padding: 12px 30px; background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            📥 Import Data
+                        </button>
+                        <button onclick="testConnection()" style="padding: 12px 30px; background: #f5f5f5; color: #666; border: 1px solid #e0e0e0; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            🔍 Test Connection
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supabase Configuration -->
+            <div class="section-card">
+                <h2>Supabase Configuration</h2>
+                <p style="color: #666; margin-bottom: 20px;">Configure your Supabase database connection</p>
+                <div style="display: grid; gap: 20px;">
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Supabase URL</label>
+                        <input type="url" id="supabaseUrl" placeholder="https://your-project.supabase.co" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Supabase Anon Key</label>
+                        <input type="password" id="supabaseKey" placeholder="Enter your Supabase anon key" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
+                        <p style="margin: 0; color: #e65100; font-size: 0.9em;">
+                            <strong>⚠️ Security:</strong> These credentials are stored locally in your browser. Never share your Supabase keys publicly.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="saveSupabaseConfig()" style="padding: 12px 30px; background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            💾 Save Configuration
+                        </button>
+                        <button onclick="testSupabaseConnection()" style="padding: 12px 30px; background: #f5f5f5; color: #666; border: 1px solid #e0e0e0; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            🔍 Test Connection
+                        </button>
+                        <button onclick="clearSupabaseConfig()" style="padding: 12px 30px; background: #ffebee; color: #e53935; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            🗑️ Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div class="section-card">
+                <h2>Data Management</h2>
+                <p style="color: #666; margin-bottom: 20px;">Backup, restore, or clear your application data</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <button onclick="exportData()" style="padding: 15px 20px; background: #e8f5e9; color: #2e7d32; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease;">
+                        <span style="font-size: 20px;">📤</span>
+                        <span>Export Data</span>
+                    </button>
+                    <button onclick="importData()" style="padding: 15px 20px; background: #e3f2fd; color: #1976d2; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease;">
+                        <span style="font-size: 20px;">📥</span>
+                        <span>Import Data</span>
+                    </button>
+                    <button onclick="clearAllData()" style="padding: 15px 20px; background: #ffebee; color: #e53935; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s ease;">
+                        <span style="font-size: 20px;">🗑️</span>
+                        <span>Clear All Data</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- System Preferences -->
+            <div class="section-card">
+                <h2>System Preferences</h2>
+                <div style="display: grid; gap: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #333;">Enable Notifications</h4>
+                            <p style="margin: 0; color: #666; font-size: 0.9em;">Receive alerts for important events</p>
+                        </div>
+                        <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="enableNotifications" onchange="savePreferences()" style="width: auto; margin-right: 10px;">
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #333;">Auto-Save</h4>
+                            <p style="margin: 0; color: #666; font-size: 0.9em;">Automatically save changes</p>
+                        </div>
+                        <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="autoSave" onchange="savePreferences()" checked style="width: auto; margin-right: 10px;">
+                        </label>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0; color: #333;">Show Welcome Message</h4>
+                            <p style="margin: 0; color: #666; font-size: 0.9em;">Display welcome message on login</p>
+                        </div>
+                        <label style="display: inline-flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="showWelcome" onchange="savePreferences()" checked style="width: auto; margin-right: 10px;">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // Menu toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                removeStorage('userSession');
+                sessionStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Set user name and load settings
+        window.addEventListener('DOMContentLoaded', () => {
+            const userSession = getStorage('userSession') || 
+                                JSON.parse(sessionStorage.getItem('userSession') || 'null');
+            
+            if (userSession && userSession.username) {
+                document.getElementById('userName').textContent = userSession.username;
+            }
+
+            loadSettings();
+        });
+
+        // Load settings
+        function loadSettings() {
+            const supabaseConfig = getStorage('supabaseConfig');
+            if (supabaseConfig) {
+                document.getElementById('supabaseUrl').value = supabaseConfig.url || '';
+                document.getElementById('supabaseKey').value = supabaseConfig.key || '';
+            }
+
+            const preferences = getStorage('preferences') || {};
+            document.getElementById('enableNotifications').checked = preferences.notifications || false;
+            document.getElementById('autoSave').checked = preferences.autoSave !== false;
+            document.getElementById('showWelcome').checked = preferences.showWelcome !== false;
+        }
+
+        // Import from Google Sheets
+        function importFromSheets() {
+            const url = document.getElementById('sheetsUrl').value;
+            const type = document.getElementById('importType').value;
+
+            if (!url || !type) {
+                alert('Please provide both URL and import type');
+                return;
+            }
+
+            alert('Google Sheets import functionality would be implemented with the Sheets API');
+        }
+
+        // Test Google Sheets connection
+        function testConnection() {
+            const url = document.getElementById('sheetsUrl').value;
+            if (!url) {
+                alert('Please enter a Google Sheets URL');
+                return;
+            }
+            alert('Testing connection to Google Sheets...\nThis would verify access to the spreadsheet.');
+        }
+
+        // Save Supabase configuration
+        function saveSupabaseConfig() {
+            const url = document.getElementById('supabaseUrl').value;
+            const key = document.getElementById('supabaseKey').value;
+
+            if (!url || !key) {
+                alert('Please provide both URL and API key');
+                return;
+            }
+
+            setStorage('supabaseConfig', { url, key });
+            alert('Supabase configuration saved successfully!');
+        }
+
+        // Test Supabase connection
+        function testSupabaseConnection() {
+            const config = getStorage('supabaseConfig');
+            if (!config || !config.url || !config.key) {
+                alert('Please save Supabase configuration first');
+                return;
+            }
+            alert('Testing connection to Supabase...\nThis would verify the database connection.');
+        }
+
+        // Clear Supabase configuration
+        function clearSupabaseConfig() {
+            if (confirm('Are you sure you want to clear the Supabase configuration?')) {
+                removeStorage('supabaseConfig');
+                document.getElementById('supabaseUrl').value = '';
+                document.getElementById('supabaseKey').value = '';
+                alert('Supabase configuration cleared');
+            }
+        }
+
+        // Export data
+        function exportData() {
+            const data = {
+                students: getStorage('students') || [],
+                staff: getStorage('staff') || [],
+                schoolInfo: getStorage('schoolInfo') || {},
+                documents: getStorage('documents') || [],
+                preferences: getStorage('preferences') || {}
+            };
+
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `school-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('Data exported successfully!');
+        }
+
+        // Import data
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data.students) setStorage('students', data.students);
+                        if (data.staff) setStorage('staff', data.staff);
+                        if (data.schoolInfo) setStorage('schoolInfo', data.schoolInfo);
+                        if (data.documents) setStorage('documents', data.documents);
+                        if (data.preferences) setStorage('preferences', data.preferences);
+                        alert('Data imported successfully!');
+                        location.reload();
+                    } catch (error) {
+                        alert('Error importing data: Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will permanently delete ALL data including students, staff, documents, and settings.\n\nAre you absolutely sure?')) {
+                const confirmation = prompt('Type YES to confirm this action:');
+                if (confirmation === 'YES') {
+                    localStorage.clear();
+                    alert('All data has been cleared');
+                    location.reload();
+                }
+            }
+        }
+
+        // Save preferences
+        function savePreferences() {
+            const preferences = {
+                notifications: document.getElementById('enableNotifications').checked,
+                autoSave: document.getElementById('autoSave').checked,
+                showWelcome: document.getElementById('showWelcome').checked
+            };
+            setStorage('preferences', preferences);
+        }
+    </script>
+</body>
+</html>

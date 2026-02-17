@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link active">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>Dashboard</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin User</span>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="content-area">
+            <!-- Welcome Card -->
+            <div class="welcome-card">
+                <h2>Welcome back, <span id="welcomeName">Admin</span>! 👋</h2>
+                <p>Here's what's happening in your school today.</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e3f2fd;">👨‍🎓</div>
+                    <div class="stat-info">
+                        <h3>Total Students</h3>
+                        <p class="stat-number">0</p>
+                        <span class="stat-change positive">+0 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f3e5f5;">👥</div>
+                    <div class="stat-info">
+                        <h3>Total Staff</h3>
+                        <p class="stat-number">0</p>
+                        <span class="stat-change positive">+0 this month</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e8f5e9;">📄</div>
+                    <div class="stat-info">
+                        <h3>Documents</h3>
+                        <p class="stat-number">0</p>
+                        <span class="stat-change">Total files</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fff3e0;">📊</div>
+                    <div class="stat-info">
+                        <h3>Active Classes</h3>
+                        <p class="stat-number">0</p>
+                        <span class="stat-change">This semester</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="section-card">
+                <h2>Quick Actions</h2>
+                <div class="quick-actions">
+                    <a href="students-list.html" class="action-btn">
+                        <span class="action-icon">➕</span>
+                        <span>Add Student</span>
+                    </a>
+                    <a href="staff-list.html" class="action-btn">
+                        <span class="action-icon">➕</span>
+                        <span>Add Staff</span>
+                    </a>
+                    <a href="documents.html" class="action-btn">
+                        <span class="action-icon">📤</span>
+                        <span>Upload Document</span>
+                    </a>
+                    <a href="settings.html" class="action-btn">
+                        <span class="action-icon">📥</span>
+                        <span>Import from Sheets</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="section-card">
+                <h2>Recent Activity</h2>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-icon">📝</span>
+                        <div class="activity-details">
+                            <p class="activity-title">No recent activity</p>
+                            <span class="activity-time">Start by adding students or staff</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        // Menu toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                removeStorage('userSession');
+                sessionStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Set user name
+        window.addEventListener('DOMContentLoaded', () => {
+            const userSession = getStorage('userSession') || 
+                                JSON.parse(sessionStorage.getItem('userSession') || 'null');
+            
+            if (userSession && userSession.username) {
+                document.getElementById('userName').textContent = userSession.username;
+                document.getElementById('welcomeName').textContent = userSession.username;
+            }
+        });
+    </script>
+</body>
+</html>
