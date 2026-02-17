@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Information - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link active">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>School Information</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin User</span>
+            </div>
+        </header>
+
+        <!-- School Info Content -->
+        <div class="content-area">
+            <!-- School Header Card -->
+            <div class="welcome-card">
+                <h2>School Details 🏛️</h2>
+                <p>Manage and view comprehensive school information</p>
+            </div>
+
+            <!-- Basic Information -->
+            <div class="section-card">
+                <h2>Basic Information</h2>
+                <div style="display: grid; gap: 20px;">
+                    <div class="info-item">
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">School Name</label>
+                        <input type="text" id="schoolName" placeholder="Enter school name" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div class="info-item">
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Address</label>
+                        <textarea id="schoolAddress" rows="3" placeholder="Enter school address" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em; resize: vertical;"></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="info-item">
+                            <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Principal Name</label>
+                            <input type="text" id="principalName" placeholder="Enter principal name" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        </div>
+                        <div class="info-item">
+                            <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Phone Number</label>
+                            <input type="tel" id="schoolPhone" placeholder="Enter phone number" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        </div>
+                        <div class="info-item">
+                            <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Email Address</label>
+                            <input type="email" id="schoolEmail" placeholder="Enter email address" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        <button onclick="saveSchoolInfo()" style="padding: 12px 30px; background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="section-card">
+                <h2>School Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e3f2fd;">👨‍🎓</div>
+                        <div class="stat-info">
+                            <h3>Total Students</h3>
+                            <p class="stat-number" id="totalStudents">0</p>
+                            <span class="stat-change">Enrolled</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #f3e5f5;">👥</div>
+                        <div class="stat-info">
+                            <h3>Total Staff</h3>
+                            <p class="stat-number" id="totalStaff">0</p>
+                            <span class="stat-change">Employees</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e8f5e9;">📚</div>
+                        <div class="stat-info">
+                            <h3>Classes</h3>
+                            <p class="stat-number" id="totalClasses">0</p>
+                            <span class="stat-change">Active</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fff3e0;">🏆</div>
+                        <div class="stat-info">
+                            <h3>Achievements</h3>
+                            <p class="stat-number" id="totalAchievements">0</p>
+                            <span class="stat-change">This year</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Additional Details -->
+            <div class="section-card">
+                <h2>Additional Information</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div class="info-item">
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Established Year</label>
+                        <input type="number" id="establishedYear" placeholder="e.g., 1990" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div class="info-item">
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Affiliation</label>
+                        <input type="text" id="affiliation" placeholder="Enter affiliation board" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div class="info-item">
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Website</label>
+                        <input type="url" id="website" placeholder="https://www.example.com" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Menu toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                removeStorage('userSession');
+                sessionStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Set user name
+        window.addEventListener('DOMContentLoaded', () => {
+            const userSession = getStorage('userSession') || 
+                                JSON.parse(sessionStorage.getItem('userSession') || 'null');
+            
+            if (userSession && userSession.username) {
+                document.getElementById('userName').textContent = userSession.username;
+            }
+
+            loadSchoolInfo();
+        });
+
+        // Load school information
+        function loadSchoolInfo() {
+            const schoolInfo = getStorage('schoolInfo');
+            if (schoolInfo) {
+                document.getElementById('schoolName').value = schoolInfo.name || '';
+                document.getElementById('schoolAddress').value = schoolInfo.address || '';
+                document.getElementById('principalName').value = schoolInfo.principal || '';
+                document.getElementById('schoolPhone').value = schoolInfo.phone || '';
+                document.getElementById('schoolEmail').value = schoolInfo.email || '';
+                document.getElementById('establishedYear').value = schoolInfo.established || '';
+                document.getElementById('affiliation').value = schoolInfo.affiliation || '';
+                document.getElementById('website').value = schoolInfo.website || '';
+            }
+        }
+
+        // Save school information
+        function saveSchoolInfo() {
+            const schoolInfo = {
+                name: document.getElementById('schoolName').value,
+                address: document.getElementById('schoolAddress').value,
+                principal: document.getElementById('principalName').value,
+                phone: document.getElementById('schoolPhone').value,
+                email: document.getElementById('schoolEmail').value,
+                established: document.getElementById('establishedYear').value,
+                affiliation: document.getElementById('affiliation').value,
+                website: document.getElementById('website').value
+            };
+
+            setStorage('schoolInfo', schoolInfo);
+            alert('School information saved successfully!');
+        }
+    </script>
+</body>
+</html>

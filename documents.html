@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documents - School Management System</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">🏫</div>
+            <h2>School MS</h2>
+            <button class="close-btn" id="closeSidebar">✕</button>
+        </div>
+
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">
+                <span class="icon">📊</span>
+                <span class="text">Dashboard</span>
+            </a>
+            <a href="students-list.html" class="nav-link">
+                <span class="icon">👨‍🎓</span>
+                <span class="text">Students</span>
+            </a>
+            <a href="staff-list.html" class="nav-link">
+                <span class="icon">👥</span>
+                <span class="text">Staff</span>
+            </a>
+            <a href="school-info.html" class="nav-link">
+                <span class="icon">🏛️</span>
+                <span class="text">School Info</span>
+            </a>
+            <a href="documents.html" class="nav-link active">
+                <span class="icon">📄</span>
+                <span class="text">Documents</span>
+            </a>
+            <a href="settings.html" class="nav-link">
+                <span class="icon">⚙️</span>
+                <span class="text">Settings</span>
+            </a>
+            <a href="profile.html" class="nav-link">
+                <span class="icon">👤</span>
+                <span class="text">Profile</span>
+            </a>
+            <a href="#" class="nav-link logout" id="logoutBtn">
+                <span class="icon">🚪</span>
+                <span class="text">Logout</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <h1>Documents</h1>
+            <div class="header-right">
+                <span class="user-name" id="userName">Admin User</span>
+            </div>
+        </header>
+
+        <!-- Documents Content -->
+        <div class="content-area">
+            <!-- Documents Header Card -->
+            <div class="welcome-card">
+                <h2>Document Management 📄</h2>
+                <p>Upload, organize, and manage your school documents</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="section-card">
+                <h2>Upload Document</h2>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div>
+                            <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Document Title</label>
+                            <input type="text" id="docTitle" placeholder="Enter document title" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                        </div>
+                        <div>
+                            <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Category</label>
+                            <select id="docCategory" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                                <option value="">Select category</option>
+                                <option value="academic">Academic</option>
+                                <option value="administrative">Administrative</option>
+                                <option value="financial">Financial</option>
+                                <option value="student">Student Records</option>
+                                <option value="staff">Staff Records</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Select File</label>
+                        <input type="file" id="docFile" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
+                    </div>
+                    <div>
+                        <label style="color: #666; font-size: 0.9em; display: block; margin-bottom: 8px;">Description (Optional)</label>
+                        <textarea id="docDescription" rows="2" placeholder="Enter document description" style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 1em; resize: vertical;"></textarea>
+                    </div>
+                    <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                        <button onclick="uploadDocument()" style="padding: 12px 30px; background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                            📤 Upload Document
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e3f2fd;">📄</div>
+                    <div class="stat-info">
+                        <h3>Total Documents</h3>
+                        <p class="stat-number" id="totalDocs">0</p>
+                        <span class="stat-change">All categories</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #f3e5f5;">📊</div>
+                    <div class="stat-info">
+                        <h3>Storage Used</h3>
+                        <p class="stat-number" style="font-size: 1.5em;">0 MB</p>
+                        <span class="stat-change">of available space</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #e8f5e9;">📁</div>
+                    <div class="stat-info">
+                        <h3>Categories</h3>
+                        <p class="stat-number">6</p>
+                        <span class="stat-change">Document types</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: #fff3e0;">📤</div>
+                    <div class="stat-info">
+                        <h3>Recent Uploads</h3>
+                        <p class="stat-number" id="recentUploads">0</p>
+                        <span class="stat-change">This week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents List -->
+            <div class="section-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin-bottom: 0;">Document Library</h2>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="filterCategory" onchange="filterDocuments()" style="padding: 8px 15px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9em;">
+                            <option value="">All Categories</option>
+                            <option value="academic">Academic</option>
+                            <option value="administrative">Administrative</option>
+                            <option value="financial">Financial</option>
+                            <option value="student">Student Records</option>
+                            <option value="staff">Staff Records</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="text" id="searchDocs" placeholder="Search documents..." onkeyup="searchDocuments()" style="padding: 8px 15px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.9em; width: 200px;">
+                    </div>
+                </div>
+                <div id="documentsList" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📁</div>
+                        <p>No documents uploaded yet</p>
+                        <p style="font-size: 0.9em;">Start by uploading your first document above</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script>
+        // Menu toggle
+        const sidebar = document.getElementById('sidebar');
+        const menuBtn = document.getElementById('menuBtn');
+        const closeSidebar = document.getElementById('closeSidebar');
+
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        closeSidebar.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Logout functionality
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                removeStorage('userSession');
+                sessionStorage.removeItem('userSession');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Set user name
+        window.addEventListener('DOMContentLoaded', () => {
+            const userSession = getStorage('userSession') || 
+                                JSON.parse(sessionStorage.getItem('userSession') || 'null');
+            
+            if (userSession && userSession.username) {
+                document.getElementById('userName').textContent = userSession.username;
+            }
+
+            loadDocuments();
+        });
+
+        // Load documents
+        function loadDocuments() {
+            const documents = getStorage('documents') || [];
+            document.getElementById('totalDocs').textContent = documents.length;
+            
+            if (documents.length > 0) {
+                displayDocuments(documents);
+            }
+        }
+
+        // Display documents
+        function displayDocuments(documents) {
+            const listContainer = document.getElementById('documentsList');
+            if (documents.length === 0) {
+                listContainer.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #999;">
+                        <div style="font-size: 3em; margin-bottom: 15px;">📁</div>
+                        <p>No documents found</p>
+                    </div>`;
+                return;
+            }
+
+            listContainer.innerHTML = documents.map((doc, index) => `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; display: flex; align-items: center; gap: 20px; transition: all 0.3s ease;" onmouseover="this.style.background='#e3f2fd'" onmouseout="this.style.background='#f8f9fa'">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0;">
+                        📄
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="margin: 0 0 5px 0; color: #333;">${doc.title}</h4>
+                        <p style="margin: 0; color: #666; font-size: 0.9em;">
+                            <span style="background: #e3f2fd; padding: 3px 10px; border-radius: 4px; margin-right: 10px;">${doc.category}</span>
+                            ${doc.description ? doc.description : 'No description'}
+                        </p>
+                        <p style="margin: 5px 0 0 0; color: #999; font-size: 0.85em;">
+                            Uploaded: ${new Date(doc.uploadDate).toLocaleDateString()}
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="downloadDocument(${index})" style="padding: 8px 16px; background: #e3f2fd; color: #1976d2; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;">
+                            Download
+                        </button>
+                        <button onclick="deleteDocument(${index})" style="padding: 8px 16px; background: #ffebee; color: #e53935; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s ease;">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Upload document
+        function uploadDocument() {
+            const title = document.getElementById('docTitle').value;
+            const category = document.getElementById('docCategory').value;
+            const file = document.getElementById('docFile').files[0];
+            const description = document.getElementById('docDescription').value;
+
+            if (!title || !category || !file) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const documents = getStorage('documents') || [];
+            documents.push({
+                title,
+                category,
+                fileName: file.name,
+                fileSize: file.size,
+                description,
+                uploadDate: new Date().toISOString()
+            });
+
+            setStorage('documents', documents);
+            
+            // Clear form
+            document.getElementById('docTitle').value = '';
+            document.getElementById('docCategory').value = '';
+            document.getElementById('docFile').value = '';
+            document.getElementById('docDescription').value = '';
+
+            alert('Document uploaded successfully!');
+            loadDocuments();
+        }
+
+        // Delete document
+        function deleteDocument(index) {
+            if (confirm('Are you sure you want to delete this document?')) {
+                const documents = getStorage('documents') || [];
+                documents.splice(index, 1);
+                setStorage('documents', documents);
+                loadDocuments();
+            }
+        }
+
+        // Download document (simulated)
+        function downloadDocument(index) {
+            alert('Download functionality would be implemented with actual file storage');
+        }
+
+        // Filter documents
+        function filterDocuments() {
+            const category = document.getElementById('filterCategory').value;
+            const documents = getStorage('documents') || [];
+            const filtered = category ? documents.filter(doc => doc.category === category) : documents;
+            displayDocuments(filtered);
+        }
+
+        // Search documents
+        function searchDocuments() {
+            const searchTerm = document.getElementById('searchDocs').value.toLowerCase();
+            const documents = getStorage('documents') || [];
+            const filtered = documents.filter(doc => 
+                doc.title.toLowerCase().includes(searchTerm) || 
+                (doc.description && doc.description.toLowerCase().includes(searchTerm))
+            );
+            displayDocuments(filtered);
+        }
+    </script>
+</body>
+</html>
