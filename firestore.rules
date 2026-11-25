@@ -1,0 +1,324 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL PRIMITIVES ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    function isValidDateKey(d) {
+      return d is string && d.size() == 10 && d.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$');
+    }
+
+    function isValidInfoFields(list) {
+      return list is list &&
+             list.size() <= 20 &&
+             (list.size() == 0 || (
+               list[0] is map &&
+               list[0].keys().hasAll(['label', 'value']) &&
+               list[0].keys().hasOnly(['label', 'value']) &&
+               list[0].label is string && list[0].label.size() <= 60 &&
+               list[0].value is string && list[0].value.size() <= 300
+             ));
+    }
+
+    // --- ENTITY VALIDATION BLUEPRINTS ---
+    function isValidUserProfile(data, userId) {
+      return data.userId is string && data.userId == userId && data.userId == request.auth.uid && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+             data.bio is string && data.bio.size() <= 300 &&
+             data.photoDataUrl is string && data.photoDataUrl.size() <= 200000 &&
+             data.weeklyOff is int && data.weeklyOff >= 0 && data.weeklyOff <= 6 &&
+             data.shiftStart is string && data.shiftStart.size() <= 10 &&
+             data.darkMode is bool &&
+             isValidInfoFields(data.infoFields) &&
+             data.sessionDate is string && data.sessionDate.size() <= 16 &&
+             data.punchedIn is bool &&
+             data.sessionInTime is string && data.sessionInTime.size() <= 10 &&
+             data.sessionOutTime is string && data.sessionOutTime.size() <= 10 &&
+             data.onBreak is bool &&
+             data.breakStartMs is int && data.breakStartMs >= 0 &&
+             data.totalBreakMins is int && data.totalBreakMins >= 0 && data.totalBreakMins <= 1440 &&
+             data.githubConfigUrl is string && data.githubConfigUrl.size() <= 500 &&
+             data.githubConfigVersion is string && data.githubConfigVersion.size() <= 64 &&
+             data.sampleDataSeeded is bool;
+    }
+
+    function isValidAttendance(data, dateKey) {
+      return isValidDateKey(data.dateKey) && data.dateKey == dateKey &&
+             data.status is string && data.status in [
+               'Present', 'Leave', 'Absent', 'Holiday', 'Offday',
+               'Outstation', 'Late', 'Early_Going', 'MissPunch'
+             ] &&
+             data.leaveType is string && data.leaveType.size() <= 60 &&
+             data.inTime is string && data.inTime.size() <= 10 &&
+             data.outTime is string && data.outTime.size() <= 10 &&
+             data.note is string && data.note.size() <= 300;
+    }
+
+    function isValidOutOnWork(data) {
+      return isValidDateKey(data.date) &&
+             data.mode is string && data.mode in ['Half Day', 'Full Day', 'Quarter Day'] &&
+             data.startTime is string && data.startTime.size() <= 10 &&
+             data.endTime is string && data.endTime.size() <= 10 &&
+             data.meetingWith is string && data.meetingWith.size() >= 1 && data.meetingWith.size() <= 150 &&
+             data.location is string && data.location.size() <= 200 &&
+             data.remarks is string && data.remarks.size() <= 500 &&
+             data.attachmentName is string && data.attachmentName.size() <= 200;
+    }
+
+    function isValidExpense(data) {
+      return isValidDateKey(data.date) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+             data.amount is int && data.amount >= 1 && data.amount <= 100000000 &&
+             data.owner is string && data.owner in ['headmaster', 'personal'] &&
+             data.recovered is bool &&
+             data.note is string && data.note.size() <= 300;
+    }
+
+    function isValidFinance(data) {
+      return isValidDateKey(data.date) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.type is string && data.type.size() >= 1 && data.type.size() <= 40 &&
+             data.amount is int && data.amount >= 1 && data.amount <= 100000000 &&
+             data.status is string && data.status in ['received', 'pending'];
+    }
+
+    function isValidReminder(data) {
+      return data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+             isValidDateKey(data.validFrom) &&
+             isValidDateKey(data.validUntil) &&
+             data.note is string && data.note.size() <= 400;
+    }
+
+    function isValidTask(data) {
+      return data.text is string && data.text.size() >= 1 && data.text.size() <= 300 &&
+             data.done is bool;
+    }
+
+    function isValidColleague(data) {
+      return data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.role is string && data.role.size() <= 200 &&
+             data.theme is string && data.theme in ['sky', 'mint', 'sunset', 'lavender'] &&
+             data.photoDataUrl is string && data.photoDataUrl.size() <= 200000 &&
+             data.bgPhotoDataUrl is string && data.bgPhotoDataUrl.size() <= 200000 &&
+             isValidInfoFields(data.infoFields);
+    }
+
+    // --- USER-SCOPED COLLECTION RULES ---
+    match /users/{userId} {
+      allow get: if isOwner(userId) && isValidId(userId);
+      allow list: if false;
+      allow delete: if isOwner(userId) && isValidId(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'bio', 'photoDataUrl', 'weeklyOff',
+                         'shiftStart', 'darkMode', 'infoFields', 'sessionDate', 'punchedIn',
+                         'sessionInTime', 'sessionOutTime', 'onBreak', 'breakStartMs',
+                         'totalBreakMins', 'githubConfigUrl', 'githubConfigVersion',
+                         'sampleDataSeeded', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'bio', 'photoDataUrl', 'weeklyOff',
+                         'shiftStart', 'darkMode', 'infoFields', 'sessionDate', 'punchedIn',
+                         'sessionInTime', 'sessionOutTime', 'onBreak', 'breakStartMs',
+                         'totalBreakMins', 'githubConfigUrl', 'githubConfigVersion',
+                         'sampleDataSeeded', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming(), userId) &&
+                       isValidTimestamp(incoming().createdAt) &&
+                       isValidTimestamp(incoming().updatedAt);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidUserProfile(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       isValidTimestamp(incoming().updatedAt) &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'bio', 'photoDataUrl', 'weeklyOff', 'shiftStart',
+                         'darkMode', 'infoFields', 'sessionDate', 'punchedIn',
+                         'sessionInTime', 'sessionOutTime', 'onBreak', 'breakStartMs',
+                         'totalBreakMins', 'githubConfigUrl', 'githubConfigVersion',
+                         'sampleDataSeeded', 'updatedAt'
+                       ]);
+
+      match /attendance/{dateKey} {
+        allow get: if isOwner(userId) && isValidId(dateKey);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(dateKey);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(dateKey) &&
+                         incoming().keys().hasAll(['dateKey', 'status', 'leaveType', 'inTime', 'outTime', 'note', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['dateKey', 'status', 'leaveType', 'inTime', 'outTime', 'note', 'createdAt', 'updatedAt']) &&
+                         isValidAttendance(incoming(), dateKey) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(dateKey) &&
+                         isValidAttendance(incoming(), dateKey) &&
+                         incoming().dateKey == existing().dateKey &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'leaveType', 'inTime', 'outTime', 'note', 'updatedAt']);
+      }
+
+      match /out_on_work/{logId} {
+        allow get: if isOwner(userId) && isValidId(logId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(logId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(logId) &&
+                         incoming().keys().hasAll(['date', 'mode', 'startTime', 'endTime', 'meetingWith', 'location', 'remarks', 'attachmentName', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['date', 'mode', 'startTime', 'endTime', 'meetingWith', 'location', 'remarks', 'attachmentName', 'createdAt', 'updatedAt']) &&
+                         isValidOutOnWork(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(logId) &&
+                         isValidOutOnWork(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['date', 'mode', 'startTime', 'endTime', 'meetingWith', 'location', 'remarks', 'attachmentName', 'updatedAt']);
+      }
+
+      match /expenses/{expenseId} {
+        allow get: if isOwner(userId) && isValidId(expenseId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(expenseId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(expenseId) &&
+                         incoming().keys().hasAll(['date', 'title', 'category', 'amount', 'owner', 'recovered', 'note', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['date', 'title', 'category', 'amount', 'owner', 'recovered', 'note', 'createdAt', 'updatedAt']) &&
+                         isValidExpense(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(expenseId) &&
+                         isValidExpense(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['date', 'title', 'category', 'amount', 'owner', 'recovered', 'note', 'updatedAt']);
+      }
+
+      match /finances/{financeId} {
+        allow get: if isOwner(userId) && isValidId(financeId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(financeId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(financeId) &&
+                         incoming().keys().hasAll(['date', 'title', 'type', 'amount', 'status', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['date', 'title', 'type', 'amount', 'status', 'createdAt', 'updatedAt']) &&
+                         isValidFinance(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(financeId) &&
+                         isValidFinance(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['date', 'title', 'type', 'amount', 'status', 'updatedAt']);
+      }
+
+      match /reminders/{reminderId} {
+        allow get: if isOwner(userId) && isValidId(reminderId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(reminderId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(reminderId) &&
+                         incoming().keys().hasAll(['title', 'category', 'validFrom', 'validUntil', 'note', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['title', 'category', 'validFrom', 'validUntil', 'note', 'createdAt', 'updatedAt']) &&
+                         isValidReminder(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(reminderId) &&
+                         isValidReminder(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['title', 'category', 'validFrom', 'validUntil', 'note', 'updatedAt']);
+      }
+
+      match /tasks/{taskId} {
+        allow get: if isOwner(userId) && isValidId(taskId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(taskId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(taskId) &&
+                         incoming().keys().hasAll(['text', 'done', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['text', 'done', 'createdAt', 'updatedAt']) &&
+                         isValidTask(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(taskId) &&
+                         isValidTask(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['text', 'done', 'updatedAt']);
+      }
+
+      match /colleagues/{colleagueId} {
+        allow get: if isOwner(userId) && isValidId(colleagueId);
+        allow list: if isOwner(userId);
+        allow delete: if isOwner(userId) && isValidId(colleagueId);
+
+        allow create: if isOwner(userId) &&
+                         isValidId(colleagueId) &&
+                         incoming().keys().hasAll(['name', 'role', 'theme', 'photoDataUrl', 'bgPhotoDataUrl', 'infoFields', 'createdAt', 'updatedAt']) &&
+                         incoming().keys().hasOnly(['name', 'role', 'theme', 'photoDataUrl', 'bgPhotoDataUrl', 'infoFields', 'createdAt', 'updatedAt']) &&
+                         isValidColleague(incoming()) &&
+                         isValidTimestamp(incoming().createdAt) &&
+                         isValidTimestamp(incoming().updatedAt);
+
+        allow update: if isOwner(userId) &&
+                         isValidId(colleagueId) &&
+                         isValidColleague(incoming()) &&
+                         incoming().createdAt == existing().createdAt &&
+                         isValidTimestamp(incoming().updatedAt) &&
+                         incoming().diff(existing()).affectedKeys().hasOnly(['name', 'role', 'theme', 'photoDataUrl', 'bgPhotoDataUrl', 'infoFields', 'updatedAt']);
+      }
+    }
+  }
+}
