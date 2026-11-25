@@ -22,11 +22,20 @@ jobs:
 
       - name: Install Android SDK packages (API 36)
         run: |
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          ls "$ANDROID_HOME" || true
-          yes | sdkmanager --licenses || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
-          sdkmanager --list_installed
+          echo "ANDROID_HOME=${ANDROID_HOME:-UNSET}"
+          ls -la "${ANDROID_HOME:-/usr/local/lib/android/sdk}" || true
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then
+            SDKMANAGER="${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "SDKMANAGER=$SDKMANAGER"
+          ls -la "$SDKMANAGER" || true
+          yes | "$SDKMANAGER" --licenses || true
+          "$SDKMANAGER" "platforms;android-36" "build-tools;36.0.0" "platform-tools" || {
+            echo "::error::sdkmanager install failed (ANDROID_HOME=${ANDROID_HOME:-UNSET}, SDKMANAGER=$SDKMANAGER)"
+            exit 1
+          }
+          "$SDKMANAGER" --list_installed
 
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
