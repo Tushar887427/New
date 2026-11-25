@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Work'ed</title>
+    <!-- Plus Jakarta Sans & Inter Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef6f2',
+                            100: '#d7ebe2',
+                            200: '#b2d7c7',
+                            500: '#0c6b4e',
+                            600: '#06573f',
+                            700: '#044733',
+                            800: '#033828'
+                        },
+                        accent: {
+                            500: '#e85a3c',
+                            600: '#d4482b'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Micro-interactions: smooth view entrance, modal spring, tactile tap */
+        @keyframes viewEnter {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes modalPop {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastDrop {
+            from { opacity: 0; transform: translate(-50%, -12px) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
+        .animate-fade-in { animation: viewEnter 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .animate-modal-pop { animation: modalPop 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+        .animate-toast { animation: toastDrop 0.24s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+        .btn-tap {
+            transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .btn-tap:active { transform: scale(0.96); }
+
+        /* Fluid Toggle Switch */
+        .fluid-switch {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            border-radius: 9999px;
+            transition: background-color 0.25s ease;
+        }
+        .fluid-switch-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 9999px;
+            background: #ffffff;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+            transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .fluid-switch[aria-checked="true"] .fluid-switch-knob {
+            transform: translateX(20px);
+        }
+
+        /* Accessible focus ring */
+        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 2px solid #0c6b4e;
+            outline-offset: 2px;
+        }
+
+        /* Dark Mode unified surfaces (AMOLED Black) */
+        .dark body { background-color: #000000; color: #f4f4f5; }
+        .dark #app-shell { background-color: #000000; color: #f4f4f5; }
+        .dark .surface-card, .dark .bg-white:not(.keep-white) { background-color: #000000 !important; border-color: rgba(255, 255, 255, 0.14) !important; }
+        .dark .surface-header { background-color: rgba(0, 0, 0, 0.94) !important; border-color: rgba(255, 255, 255, 0.12) !important; }
+        .dark .surface-subtle, .dark .bg-slate-50, .dark .bg-\[\#f4f7f5\], .dark .bg-\[\#e3ece7\] { background-color: #0d0d0d !important; border-color: rgba(255, 255, 255, 0.12) !important; }
+        .dark .bg-slate-100 { background-color: #171717 !important; }
+        .dark .bg-slate-200 { background-color: #242424 !important; }
+        .dark .bg-brand-50 { background-color: #052e20 !important; }
+        .dark .bg-emerald-50 { background-color: #052e20 !important; color: #6ee7b7 !important; }
+        .dark .bg-orange-50 { background-color: #2d140c !important; color: #fdba74 !important; }
+        .dark .bg-amber-50 { background-color: #2a1c06 !important; color: #fcd34d !important; }
+        .dark .bg-cyan-50 { background-color: #082832 !important; color: #67e8f9 !important; }
+        .dark .bg-rose-50 { background-color: #2c0b12 !important; color: #fda4af !important; }
+        .dark .bg-\[\#eaf4f0\], .dark .bg-\[\#fdf0ee\], .dark .bg-\[\#eef3fc\], .dark .bg-\[\#f4eef9\], .dark .bg-\[\#fdf6e7\] { background-color: #141414 !important; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark .hover\:bg-\[\#f7faf8\]:hover, .dark .hover\:bg-\[\#eaf1ed\]:hover, .dark .hover\:bg-slate-100:hover { background-color: #141414 !important; }
+        .dark .surface-nav { background-color: rgba(0, 0, 0, 0.96) !important; border-color: rgba(255, 255, 255, 0.12) !important; }
+        .dark .text-slate-900, .dark .text-slate-800 { color: #ffffff !important; }
+        .dark .text-slate-700, .dark .text-slate-600 { color: #d4d4d8 !important; }
+        .dark .text-slate-500, .dark .text-slate-400 { color: #a1a1aa !important; }
+        .dark .text-brand-600, .dark .text-brand-700 { color: #34d399 !important; }
+        .dark .text-emerald-700 { color: #6ee7b7 !important; }
+        .dark .text-amber-700 { color: #fcd34d !important; }
+        .dark .text-cyan-700 { color: #67e8f9 !important; }
+        .dark .text-rose-700, .dark .text-rose-600 { color: #fda4af !important; }
+        .dark .bg-amber-400, .dark .bg-cyan-400 { color: #0f172a !important; }
+        .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]), .dark .divide-slate-200\/70 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(255, 255, 255, 0.12) !important; }
+        .dark .border-slate-100, .dark .border-slate-200 { border-color: rgba(255, 255, 255, 0.14) !important; }
+        .dark input, .dark select, .dark textarea { background-color: #0a0a0a !important; color: #ffffff !important; border-color: rgba(255, 255, 255, 0.18) !important; }
+    </style>
+</head>
+<body class="bg-[#e7eeea] text-slate-800 antialiased min-h-screen flex justify-center transition-colors duration-200">
+
+    <!-- Mobile-First App Shell -->
+    <div id="app-shell" class="w-full max-w-md bg-[#f4f7f5] min-h-screen shadow-2xl relative flex flex-col pb-24 overflow-x-hidden transition-colors duration-200">
+
+        <!-- ==================== VIEW 1: HOME ==================== -->
+        <section id="view-home" class="view-section animate-fade-in flex-1">
+            <!-- Top Brand Header -->
+            <div class="bg-gradient-to-br from-brand-700 to-brand-600 text-white pt-7 pb-24 px-6 rounded-b-[32px]">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="min-w-0">
+                        <p class="text-[13px] text-emerald-100/85 font-medium tracking-wide">Work'ed</p>
+                        <h1 class="text-[26px] leading-tight font-extrabold tracking-tight truncate mt-0.5" id="header-greeting">Hello, Admin</h1>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="toggleDarkMode()" id="header-theme-btn" class="btn-tap w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">
+                            <i id="header-theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="switchView('reminders')" class="btn-tap relative w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center" title="Key Dates" aria-label="Key Dates">
+                            <i data-lucide="file-clock" class="w-5 h-5"></i>
+                            <span id="reminder-badge" class="hidden absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-brand-700"></span>
+                        </button>
+                        <!-- Top-Right Profile Circle -->
+                        <button onclick="switchView('profile')" id="header-profile-btn" class="btn-tap w-11 h-11 rounded-full ring-2 ring-white/80 bg-white/20 hover:ring-white overflow-hidden flex items-center justify-center font-bold text-sm text-white shadow-sm" title="My Profile" aria-label="My Profile">
+                            A
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Floating Today's Attendance Card (8px/16px/24px spacing system) -->
+            <div class="px-5 -mt-16 space-y-6">
+                <div class="surface-card bg-white rounded-2xl p-6 shadow-md border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-[17px] font-bold text-slate-900">Today's Attendance</h2>
+                            <p id="today-date-label" class="text-[13px] text-slate-500 font-medium mt-0.5"></p>
+                        </div>
+                        <button onclick="switchView('attendance')" class="btn-tap min-h-[36px] px-2.5 rounded-xl text-[13px] font-semibold text-brand-600 dark:text-emerald-400 hover:bg-brand-50 dark:hover:bg-white/5 flex items-center gap-0.5">
+                            Details <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- In / Out Readout -->
+                    <div class="surface-subtle flex items-center justify-center gap-6 py-3.5 mb-4 bg-slate-50 rounded-2xl border border-slate-100">
+                        <div class="text-center">
+                            <span class="text-xs font-medium text-slate-500 block">In Time</span>
+                            <span id="home-in-time" class="text-[15px] font-bold text-slate-900 mt-0.5 block">--:--</span>
+                        </div>
+                        <div class="h-8 w-px bg-slate-200 dark:bg-white/10"></div>
+                        <div class="text-center">
+                            <span class="text-xs font-medium text-slate-500 block">Out Time</span>
+                            <span id="home-out-time" class="text-[15px] font-bold text-slate-900 mt-0.5 block">--:--</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Punch Button (48px touch-friendly height) -->
+                    <button id="punch-btn" onclick="handlePunchToggle()" class="btn-tap w-full h-12 rounded-2xl font-semibold text-[15px] text-white bg-gradient-to-r from-accent-500 to-accent-600 hover:brightness-105 shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 mb-4">
+                        <i data-lucide="log-in" class="w-5 h-5" id="punch-btn-icon"></i>
+                        <span id="punch-btn-text">Punch In Now</span>
+                    </button>
+
+                    <!-- Icon-Only Quick Action Pills (48px touch height) -->
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <button onclick="openMissedPunchModal()" class="btn-tap h-12 flex items-center justify-center rounded-2xl bg-[#eaf4f0] dark:bg-emerald-950/60 text-slate-800 dark:text-emerald-200 hover:brightness-95" title="Log / Correct Time" aria-label="Log Time">
+                            <i data-lucide="clock-alert" class="w-5 h-5"></i>
+                        </button>
+                        <button onclick="switchView('out-on-work')" class="btn-tap h-12 flex items-center justify-center rounded-2xl bg-[#fdf0ee] dark:bg-orange-950/50 text-slate-800 dark:text-orange-200 hover:brightness-95" title="Out Work" aria-label="Out Work">
+                            <i data-lucide="briefcase" class="w-5 h-5"></i>
+                        </button>
+                        <button id="break-btn" onclick="handleBreakToggle()" class="btn-tap h-12 flex items-center justify-center rounded-2xl bg-[#eef3fc] dark:bg-sky-950/50 text-slate-800 dark:text-sky-200 hover:brightness-95" title="Start / End Break" aria-label="Toggle Break">
+                            <i id="break-btn-icon" data-lucide="coffee" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- Weekly Off & Breaks Footer -->
+                    <div class="pt-3.5 border-t border-slate-100 flex items-center justify-between text-[13px] text-slate-500">
+                        <span class="flex items-center gap-1.5">
+                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>
+                            <span id="home-weekly-off">Weekly off - Sun</span>
+                        </span>
+                        <span id="break-status-pill" class="text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300">Breaks: 0m</span>
+                    </div>
+                </div>
+
+                <!-- Monthly Summary Card -->
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-[17px] font-bold text-slate-900">Monthly Summary</h3>
+                        <button onclick="switchView('records')" class="btn-tap text-[13px] font-semibold text-brand-600 dark:text-emerald-400 hover:underline">Full Ledger</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="switchView('attendance')" class="btn-tap surface-subtle p-3.5 rounded-2xl border border-slate-100 bg-slate-50/80 hover:bg-emerald-50/60 text-left">
+                            <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400" id="stat-present">00</div>
+                            <div class="text-xs font-semibold text-slate-600 mt-1.5 flex items-center justify-between">
+                                <span>Present</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <button onclick="switchView('records')" class="btn-tap surface-subtle p-3.5 rounded-2xl border border-slate-100 bg-slate-50/80 hover:bg-brand-50/60 text-left">
+                            <div class="text-2xl font-extrabold text-brand-600 dark:text-teal-400" id="stat-outwork">00</div>
+                            <div class="text-xs font-semibold text-slate-600 mt-1.5 flex items-center justify-between">
+                                <span>Out Work</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                            </div>
+                        </button>
+                        <button onclick="switchView('records')" class="btn-tap surface-subtle p-3.5 rounded-2xl border border-slate-100 bg-slate-50/80 hover:bg-amber-50/60 text-left">
+                            <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400" id="stat-leaves">00</div>
+                            <div class="text-xs font-semibold text-slate-600 mt-1.5 flex items-center justify-between">
+                                <span>Leaves</span>
+                                <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Headmaster Recoverable Banner -->
+                    <button onclick="switchView('expenses')" class="btn-tap mt-4 w-full p-3.5 rounded-2xl bg-[#fdf6e7] dark:bg-amber-950/40 border border-amber-200/70 dark:border-amber-700/40 flex items-center justify-between hover:brightness-95">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-white dark:bg-amber-900/50 text-slate-800 dark:text-amber-200 flex items-center justify-center shadow-xs">
+                                <i data-lucide="receipt" class="w-4 h-4"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[13px] font-bold text-amber-950 dark:text-amber-200">To Recover from Headmaster</p>
+                                <p class="text-xs text-amber-800/85 dark:text-amber-300/80">Tap to view or settle bills</p>
+                            </div>
+                        </div>
+                        <span id="home-hm-due" class="text-[15px] font-extrabold text-amber-950 dark:text-amber-200">₹0</span>
+                    </button>
+                </div>
+
+                <!-- Quick Actions (Grouped List Style with 8px/16px rhythm) -->
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Office Actions</h3>
+                    <div class="surface-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 divide-y divide-slate-100">
+                        <button onclick="openQuickLeaveModal()" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5">
+                                <span class="w-10 h-10 rounded-full bg-[#eaf4f0] dark:bg-emerald-950/70 text-slate-800 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="calendar-minus" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                <span class="text-[15px] font-semibold text-slate-800">Leave</span>
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('out-on-work')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5">
+                                <span class="w-10 h-10 rounded-full bg-[#fdf0ee] dark:bg-orange-950/60 text-slate-800 dark:text-orange-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="briefcase" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                <span class="text-[15px] font-semibold text-slate-800">Out Work</span>
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('daily-activity')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5">
+                                <span class="w-10 h-10 rounded-full bg-[#f4eef9] dark:bg-purple-950/60 text-slate-800 dark:text-purple-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="list-checks" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                <span class="text-[15px] font-semibold text-slate-800">Daily Tasks</span>
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('colleagues')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5">
+                                <span class="w-10 h-10 rounded-full bg-[#eef3fc] dark:bg-sky-950/60 text-slate-800 dark:text-sky-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="users" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                <span class="text-[15px] font-semibold text-slate-800">Colleagues</span>
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 2: ATTENDANCE CALENDAR ==================== -->
+        <section id="view-attendance" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back to Home">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Attendance</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <!-- 4 Sub-Nav Tiles -->
+                <div class="surface-subtle bg-[#e3ece7] p-2 rounded-2xl grid grid-cols-4 gap-2">
+                    <button onclick="switchView('attendance')" class="btn-tap flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl bg-brand-600 text-white shadow-sm">
+                        <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                        <span class="text-[11px] font-semibold">Calendar</span>
+                    </button>
+                    <button onclick="openMissedPunchModal()" class="btn-tap surface-card flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl bg-white text-slate-700">
+                        <i data-lucide="clock-alert" class="w-5 h-5 text-brand-600 dark:text-emerald-400"></i>
+                        <span class="text-[11px] font-semibold">Log Time</span>
+                    </button>
+                    <button onclick="switchView('out-on-work')" class="btn-tap surface-card flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl bg-white text-slate-700">
+                        <i data-lucide="briefcase" class="w-5 h-5 text-brand-600 dark:text-emerald-400"></i>
+                        <span class="text-[11px] font-semibold">Out Work</span>
+                    </button>
+                    <button onclick="switchView('daily-activity')" class="btn-tap surface-card flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-xl bg-white text-slate-700">
+                        <i data-lucide="calendar-clock" class="w-5 h-5 text-brand-600 dark:text-emerald-400"></i>
+                        <span class="text-[11px] font-semibold">Tasks</span>
+                    </button>
+                </div>
+
+                <!-- Month Picker -->
+                <div class="flex items-center justify-between">
+                    <div class="surface-card flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-2 py-1 shadow-sm">
+                        <button onclick="changeCalendarMonth(-1)" class="btn-tap w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 flex items-center justify-center" aria-label="Previous Month">
+                            <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                        </button>
+                        <span id="calendar-month-label" class="text-[13px] font-bold text-slate-800 px-2 min-w-[96px] text-center">Nov, 2026</span>
+                        <button onclick="changeCalendarMonth(1)" class="btn-tap w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 flex items-center justify-center" aria-label="Next Month">
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500">Tap any date to edit</span>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                    <div class="grid grid-cols-7 text-center text-xs font-semibold text-slate-400 mb-4">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-y-3 place-items-center"></div>
+                </div>
+
+                <!-- Clean Legends -->
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
+                    <h3 class="text-[15px] font-bold text-slate-800 mb-3.5">Legends</h3>
+                    <div class="grid grid-cols-3 gap-y-3 gap-x-2 text-xs text-slate-600 font-medium">
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-emerald-500 shrink-0"></span>Present</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-slate-500 shrink-0"></span>Leave</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-indigo-700 shrink-0"></span>Absent</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-amber-400 shrink-0"></span>Holiday</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-slate-200 shrink-0"></span>Offday</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-cyan-400 shrink-0"></span>Out Work</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-pink-600 shrink-0"></span>Late</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-fuchsia-500 shrink-0"></span>Early Out</div>
+                        <div class="flex items-center gap-2"><span class="w-3.5 h-3.5 rounded-sm bg-lime-600 shrink-0"></span>MissPunch</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 3: OUT WORK ==================== -->
+        <section id="view-out-on-work" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Out Work</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <form id="oow-form" onsubmit="saveOutOnWork(event)" class="p-5 space-y-5">
+                <!-- Date Stepper -->
+                <div class="flex items-center justify-center gap-3">
+                    <button type="button" onclick="shiftOowDate(-1)" class="btn-tap w-11 h-11 rounded-2xl bg-brand-50 dark:bg-emerald-950/60 text-brand-600 dark:text-emerald-300 flex items-center justify-center" aria-label="Previous Day">
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                    <input type="date" id="oow-date" required class="flex-1 max-w-[200px] h-11 text-center text-sm font-semibold bg-white border border-slate-200 rounded-2xl px-3">
+                    <button type="button" onclick="shiftOowDate(1)" class="btn-tap w-11 h-11 rounded-2xl bg-brand-50 dark:bg-emerald-950/60 text-brand-600 dark:text-emerald-300 flex items-center justify-center" aria-label="Next Day">
+                        <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Day Mode -->
+                <div>
+                    <label class="block text-[13px] font-bold text-slate-700 mb-2">Day Mode</label>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button type="button" data-mode="Half Day" onclick="selectOowMode(this)" class="btn-tap oow-mode-btn h-11 rounded-2xl border border-slate-200 bg-white dark:bg-[#16231f] text-[13px] font-semibold text-slate-600">Half Day</button>
+                        <button type="button" data-mode="Full Day" onclick="selectOowMode(this)" class="btn-tap oow-mode-btn h-11 rounded-2xl border-2 border-brand-600 bg-brand-50 dark:bg-emerald-950/70 text-[13px] font-bold text-brand-700 dark:text-emerald-300">Full Day</button>
+                        <button type="button" data-mode="Quarter Day" onclick="selectOowMode(this)" class="btn-tap oow-mode-btn h-11 rounded-2xl border border-slate-200 bg-white dark:bg-[#16231f] text-[13px] font-semibold text-slate-600">Quarter Day</button>
+                    </div>
+                </div>
+
+                <!-- Start / End Time -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[13px] font-bold text-slate-700 mb-2">Start Time</label>
+                        <input type="time" id="oow-start" value="10:00" required class="w-full h-11 text-sm bg-white border border-slate-200 rounded-2xl px-3.5">
+                    </div>
+                    <div>
+                        <label class="block text-[13px] font-bold text-slate-700 mb-2">End Time</label>
+                        <input type="time" id="oow-end" value="16:00" required class="w-full h-11 text-sm bg-white border border-slate-200 rounded-2xl px-3.5">
+                    </div>
+                </div>
+
+                <!-- Office / Department -->
+                <div>
+                    <label class="block text-[13px] font-bold text-slate-700 mb-2">Office / Department Visit</label>
+                    <input type="text" id="oow-client" required placeholder="e.g., DEO Office / Treasury / BDO" class="w-full h-12 text-[15px] bg-white border border-slate-200 rounded-2xl px-4">
+                </div>
+
+                <!-- Live Location -->
+                <div>
+                    <button type="button" onclick="captureLiveLocation()" class="btn-tap w-full h-12 rounded-2xl border border-brand-600 text-brand-700 dark:text-emerald-300 font-semibold text-sm flex items-center justify-center gap-2 hover:bg-brand-50 dark:hover:bg-white/5">
+                        <i data-lucide="navigation" class="w-4 h-4"></i>
+                        <span id="oow-location-label">Add Live Location</span>
+                    </button>
+                    <input type="hidden" id="oow-location" value="">
+                </div>
+
+                <!-- Remarks -->
+                <div>
+                    <label class="block text-[13px] font-bold text-slate-700 mb-2">Remarks</label>
+                    <textarea id="oow-remarks" rows="2" placeholder="Official work notes, memo number, etc." class="w-full text-[15px] bg-white border border-slate-200 rounded-2xl px-4 py-3"></textarea>
+                </div>
+
+                <!-- Optional Order / Site Photo -->
+                <div>
+                    <label class="surface-card flex items-center justify-center gap-2 h-12 rounded-2xl border border-dashed border-slate-300 bg-white text-[13px] font-medium text-slate-500 hover:border-brand-500 cursor-pointer transition">
+                        <i data-lucide="camera" class="w-4 h-4"></i>
+                        <span id="oow-file-label">Attach order / photo (optional)</span>
+                        <input type="file" id="oow-file" accept="image/*" class="hidden" onchange="handleOowFile(this)">
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-tap w-full h-12 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-[15px] shadow-md shadow-emerald-900/15">
+                    Save Out Work Record
+                </button>
+            </form>
+        </section>
+
+        <!-- ==================== VIEW 4: ACTIVITY LEDGER ==================== -->
+        <section id="view-records" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Activity Ledger</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <div class="bg-gradient-to-r from-brand-700 to-brand-600 text-white rounded-2xl p-5 flex items-center justify-between shadow-sm">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-full bg-white/15 flex items-center justify-center">
+                            <i data-lucide="layers" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-[16px] font-bold">Total Logged Records</h3>
+                            <p class="text-xs text-emerald-100/85 mt-0.5">Self-managed — no approvals needed</p>
+                        </div>
+                    </div>
+                    <span id="ledger-total-count" class="text-[28px] font-extrabold">0</span>
+                </div>
+
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Timeoffice</h3>
+                    <div id="ledger-summary-rows" class="surface-card bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm divide-y divide-slate-100"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Recent Entries</h3>
+                    <div id="ledger-recent-list" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 5: EXPENSES (PERSONAL vs HEADMASTER) ==================== -->
+        <section id="view-expenses" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-[22px] font-bold text-slate-900">Expenses</h2>
+                <button onclick="openExpenseModal()" class="btn-tap h-10 px-4 rounded-2xl bg-brand-600 text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-sm hover:bg-brand-700">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add
+                </button>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <!-- Dual Summary Cards -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gradient-to-br from-accent-500 to-accent-600 text-white rounded-2xl p-4 shadow-sm">
+                        <span class="text-xs text-orange-100 font-medium block">Headmaster Due</span>
+                        <span id="exp-hm-due" class="text-2xl font-extrabold mt-1 block">₹0</span>
+                        <span id="exp-hm-recovered" class="text-xs text-orange-100/90 mt-1.5 block">Recovered: ₹0</span>
+                    </div>
+                    <div class="surface-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                        <span class="text-xs text-slate-500 font-medium block">Personal Spent</span>
+                        <span id="exp-personal-total" class="text-2xl font-extrabold text-slate-900 mt-1 block">₹0</span>
+                        <span id="exp-total-count" class="text-xs text-slate-400 mt-1.5 block">0 records</span>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="surface-subtle bg-[#e3ece7] p-1.5 rounded-2xl grid grid-cols-3 gap-1.5 text-[13px] font-semibold">
+                    <button onclick="setExpenseFilter('all')" id="exp-tab-all" class="btn-tap py-2.5 rounded-xl bg-white dark:bg-[#16231f] text-slate-900 shadow-sm">All</button>
+                    <button onclick="setExpenseFilter('headmaster')" id="exp-tab-headmaster" class="btn-tap py-2.5 rounded-xl text-slate-600 hover:text-slate-900">Headmaster</button>
+                    <button onclick="setExpenseFilter('personal')" id="exp-tab-personal" class="btn-tap py-2.5 rounded-xl text-slate-600 hover:text-slate-900">Personal</button>
+                </div>
+
+                <!-- Expense List -->
+                <div id="expenses-list" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 6: PAY & FINANCE ==================== -->
+        <section id="view-finance" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-[22px] font-bold text-slate-900">Pay & Finance</h2>
+                <button onclick="openIncomeModal()" class="btn-tap h-10 px-4 rounded-2xl bg-brand-600 text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-sm hover:bg-brand-700">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add
+                </button>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <div class="bg-gradient-to-br from-brand-700 to-brand-600 text-white rounded-2xl p-6 shadow-md">
+                    <p class="text-[13px] text-emerald-100/85 font-medium">Net Balance (Pay − Personal Expenses)</p>
+                    <h3 id="finance-net-balance" class="text-[32px] leading-tight font-extrabold mt-1.5">₹0</h3>
+                    <div class="grid grid-cols-2 gap-4 mt-5 pt-4 border-t border-white/15">
+                        <div>
+                            <span class="text-xs text-emerald-100/85 block">Salary & Allowances</span>
+                            <span id="finance-total-income" class="text-[15px] font-bold text-emerald-300 mt-0.5 block">₹0</span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-emerald-100/85 block">Pending Arrears / Bills</span>
+                            <span id="finance-total-pending" class="text-[15px] font-bold text-amber-300 mt-0.5 block">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Salary, Allowances & Bills</h3>
+                    <div id="finance-list" class="space-y-3"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 7: KEY DATES ==================== -->
+        <section id="view-reminders" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Key Dates</h2>
+                <button onclick="openReminderModal()" class="btn-tap w-10 h-10 -mr-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-brand-600 dark:text-emerald-400 flex items-center justify-center" title="Add Key Date" aria-label="Add Key Date">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-5">
+                <div class="flex items-center justify-between gap-2">
+                    <select id="reminder-filter" onchange="renderReminders()" class="h-10 text-[13px] font-semibold bg-white border border-slate-200 rounded-2xl px-4 text-slate-700">
+                        <option value="all">All Key Dates</option>
+                        <option value="soon">Expiring within 60 days</option>
+                        <option value="expired">Expired</option>
+                    </select>
+                    <span id="reminder-count-label" class="text-xs font-medium text-slate-500">0 items</span>
+                </div>
+
+                <div id="reminders-list" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 8: DAILY TASKS ==================== -->
+        <section id="view-daily-activity" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Daily Tasks</h2>
+                <div class="w-10"></div>
+            </div>
+
+            <div class="p-5 space-y-5">
+                <form onsubmit="addDailyTask(event)" class="flex gap-2.5">
+                    <input type="text" id="new-task-input" required placeholder="Add an office task..." class="flex-1 h-12 text-[15px] bg-white border border-slate-200 rounded-2xl px-4">
+                    <button type="submit" class="btn-tap h-12 px-5 rounded-2xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Add</button>
+                </form>
+
+                <div id="daily-tasks-list" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 9: COLLEAGUES ==================== -->
+        <section id="view-colleagues" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-slate-900">Colleagues</h2>
+                <button onclick="openColleagueModal()" class="btn-tap h-10 px-4 rounded-2xl bg-brand-600 text-white text-[13px] font-semibold flex items-center gap-1.5 shadow-sm hover:bg-brand-700">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add
+                </button>
+            </div>
+
+            <div class="p-5 space-y-5">
+                <div class="relative">
+                    <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                    <input type="text" id="colleague-search" oninput="renderColleagues()" placeholder="Search colleague name, designation, or info..." class="w-full h-12 text-sm bg-white border border-slate-200 rounded-2xl pl-11 pr-4">
+                </div>
+
+                <div id="colleagues-list" class="space-y-5"></div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 10: MY PROFILE (DARK PORTRAIT CARD) ==================== -->
+        <section id="view-profile" class="view-section hidden animate-fade-in flex-1 bg-black text-white min-h-[calc(100vh-5rem)]">
+            <div class="sticky top-0 z-20 px-5 py-3.5 flex items-center justify-between bg-black/95 backdrop-blur-md border-b border-white/10">
+                <button onclick="switchView('home')" class="btn-tap w-10 h-10 -ml-2 rounded-full hover:bg-white/10 text-white flex items-center justify-center" aria-label="Back">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </button>
+                <h2 class="text-[20px] font-bold text-white">My Profile</h2>
+                <button onclick="openMyProfileModal()" class="btn-tap w-10 h-10 -mr-2 rounded-full hover:bg-white/10 text-neutral-300 flex items-center justify-center" title="Edit Profile" aria-label="Edit Profile">
+                    <i data-lucide="pencil" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div class="p-5">
+                <div id="my-profile-card" class="bg-[#0a0a0a] rounded-[28px] p-3.5 border border-white/15 shadow-2xl"></div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 11: MORE & ADMIN SETTINGS ==================== -->
+        <section id="view-more" class="view-section hidden animate-fade-in flex-1">
+            <div class="surface-header bg-white/95 backdrop-blur-md sticky top-0 z-20 px-5 py-3.5 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="text-[22px] font-bold text-slate-900">Admin Settings</h2>
+                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-brand-50 dark:bg-emerald-950/70 text-brand-700 dark:text-emerald-300">Gov Office</span>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <!-- Appearance (Fluid Dark Mode Toggle) -->
+                <div class="surface-card bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div class="flex items-center gap-3.5">
+                        <span class="w-10 h-10 rounded-full bg-[#eef3fc] dark:bg-emerald-950/70 text-slate-800 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                            <i data-lucide="moon-star" class="w-[18px] h-[18px]"></i>
+                        </span>
+                        <div>
+                            <p class="text-[15px] font-semibold text-slate-900">Dark Mode</p>
+                            <p class="text-xs text-slate-500">Comfortable low-light appearance</p>
+                        </div>
+                    </div>
+                    <button type="button" id="dark-mode-switch" role="switch" aria-checked="false" aria-label="Toggle Dark Mode" onclick="toggleDarkMode()" class="fluid-switch bg-slate-200 dark:bg-brand-600 shrink-0">
+                        <span class="fluid-switch-knob"></span>
+                    </button>
+                </div>
+
+                <!-- Schedule Preferences -->
+                <div class="surface-card bg-white rounded-2xl p-5 shadow-sm border border-slate-100 space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Office Schedule</h3>
+                    <div>
+                        <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Display Name</label>
+                        <input type="text" id="setting-name" class="w-full h-11 text-[15px] bg-slate-50 border border-slate-200 rounded-2xl px-3.5">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Weekly Off</label>
+                            <select id="setting-weekly-off" class="w-full h-11 text-sm bg-slate-50 border border-slate-200 rounded-2xl px-3">
+                                <option value="0">Sunday</option>
+                                <option value="6">Saturday</option>
+                                <option value="5">Friday</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Office Time</label>
+                            <input type="time" id="setting-shift-start" class="w-full h-11 text-sm bg-slate-50 border border-slate-200 rounded-2xl px-3">
+                        </div>
+                    </div>
+                    <button onclick="saveSettings()" class="btn-tap w-full h-12 rounded-2xl bg-brand-600 text-white text-sm font-semibold hover:bg-brand-700">Save Preferences</button>
+                </div>
+
+                <!-- Office & Directory (Grouped Pastel Circle Style) -->
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Office & Directory</h3>
+                    <div class="surface-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 divide-y divide-slate-100">
+                        <button onclick="switchView('profile')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-slate-800">
+                                <span class="w-10 h-10 rounded-full bg-[#eaf4f0] dark:bg-emerald-950/70 text-slate-800 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="user-circle" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                My Profile Card
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('colleagues')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-slate-800">
+                                <span class="w-10 h-10 rounded-full bg-[#eef3fc] dark:bg-sky-950/60 text-slate-800 dark:text-sky-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="users" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                Colleagues Directory
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('reminders')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-slate-800">
+                                <span class="w-10 h-10 rounded-full bg-[#fdf6e7] dark:bg-amber-950/60 text-slate-800 dark:text-amber-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="file-clock" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                Key Dates
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="switchView('records')" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-slate-800">
+                                <span class="w-10 h-10 rounded-full bg-[#f4eef9] dark:bg-purple-950/60 text-slate-800 dark:text-purple-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="layers" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                Activity Ledger
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data & Backup -->
+                <div>
+                    <h3 class="text-[13px] font-semibold text-slate-500 px-1 mb-2.5">Data & Backup</h3>
+                    <div class="surface-card bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 divide-y divide-slate-100">
+                        <button onclick="exportDataJSON()" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-[#f7faf8] dark:hover:bg-white/5">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-slate-800">
+                                <span class="w-10 h-10 rounded-full bg-[#eaf4f0] dark:bg-emerald-950/70 text-slate-800 dark:text-emerald-200 flex items-center justify-center shrink-0">
+                                    <i data-lucide="download" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                Export Backup (JSON)
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <button onclick="openResetConfirmModal()" class="btn-tap w-full px-4 py-3.5 min-h-[56px] flex items-center justify-between hover:bg-rose-50/70 dark:hover:bg-rose-950/30">
+                            <span class="flex items-center gap-3.5 text-[15px] font-semibold text-rose-600 dark:text-rose-400">
+                                <span class="w-10 h-10 rounded-full bg-[#fdf0ee] dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
+                                    <i data-lucide="rotate-ccw" class="w-[18px] h-[18px]"></i>
+                                </span>
+                                Reset Sample Data
+                            </span>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-rose-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== BOTTOM NAVIGATION (ACTIVE PILL MICRO-INTERACTION) ==================== -->
+        <nav class="surface-nav fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2 flex items-center justify-around z-30" aria-label="Main Navigation">
+            <button onclick="switchView('home')" data-nav="home" class="nav-btn btn-tap flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-brand-600 dark:text-emerald-400 font-semibold">
+                <span class="nav-pill px-4 py-1 rounded-full bg-brand-50 dark:bg-emerald-950/80 transition-all duration-200">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                </span>
+                <span class="text-xs">Home</span>
+            </button>
+            <button onclick="switchView('expenses')" data-nav="expenses" class="nav-btn btn-tap flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-slate-400 hover:text-slate-600">
+                <span class="nav-pill px-4 py-1 rounded-full bg-transparent transition-all duration-200">
+                    <i data-lucide="wallet" class="w-5 h-5"></i>
+                </span>
+                <span class="text-xs">Expenses</span>
+            </button>
+            <button onclick="switchView('finance')" data-nav="finance" class="nav-btn btn-tap flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-slate-400 hover:text-slate-600">
+                <span class="nav-pill px-4 py-1 rounded-full bg-transparent transition-all duration-200">
+                    <i data-lucide="coins" class="w-5 h-5"></i>
+                </span>
+                <span class="text-xs">Finance</span>
+            </button>
+            <button onclick="switchView('more')" data-nav="more" class="nav-btn btn-tap flex flex-col items-center gap-1 px-3 py-1 rounded-2xl text-slate-400 hover:text-slate-600">
+                <span class="nav-pill px-4 py-1 rounded-full bg-transparent transition-all duration-200">
+                    <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                </span>
+                <span class="text-xs">More</span>
+            </button>
+        </nav>
+
+        <!-- ==================== UNIVERSAL MODAL ==================== -->
+        <div id="app-modal" onclick="if(event.target === this) closeModal()" class="hidden fixed inset-0 z-50 bg-slate-950/55 backdrop-blur-xs flex items-end sm:items-center justify-center p-3">
+            <div class="surface-card bg-white w-full max-w-md rounded-3xl shadow-2xl max-h-[88vh] flex flex-col overflow-hidden animate-modal-pop">
+                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between shrink-0">
+                    <h3 id="modal-title" class="text-[17px] font-bold text-slate-900">Modal</h3>
+                    <button onclick="closeModal()" class="btn-tap w-9 h-9 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 flex items-center justify-center" aria-label="Close">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="modal-body" class="p-5 overflow-y-auto no-scrollbar"></div>
+            </div>
+        </div>
+
+        <!-- ==================== TOAST NOTIFICATION ==================== -->
+        <div id="toast" role="status" aria-live="polite" class="hidden fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-xs w-[90%] px-4 py-3 rounded-2xl shadow-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2"></div>
+
+    </div>
+
+    <script>
+        /* ==========================================================================
+           UTILITIES & CONSTANTS
+           ========================================================================== */
+
+        const STORAGE_KEY = 'solo_gov_office_hub_v6';
+        const TODAY = new Date();
+        const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function toDateKey(d) {
+            const yr = d.getFullYear();
+            const mo = String(d.getMonth() + 1).padStart(2, '0');
+            const da = String(d.getDate()).padStart(2, '0');
+            return `${yr}-${mo}-${da}`;
+        }
+
+        const TODAY_KEY = toDateKey(TODAY);
+
+        function formatTime12h(time24) {
+            if (!time24 || !time24.includes(':')) return '--:--';
+            const [hStr, mStr] = time24.split(':');
+            let h = parseInt(hStr, 10);
+            const suffix = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${String(h).padStart(2, '0')}:${mStr} ${suffix}`;
+        }
+
+        function formatPrettyDate(dateStr) {
+            if (!dateStr) return '--';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            const mIdx = parseInt(parts[1], 10) - 1;
+            return `${parts[2]} ${MONTH_NAMES[mIdx] || parts[1]} ${parts[0]}`;
+        }
+
+        function formatINR(num) {
+            return '₹' + Number(num || 0).toLocaleString('en-IN');
+        }
+
+        function escapeHTML(str) {
+            return String(str || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getCurrentTime24() {
+            const now = new Date();
+            return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        }
+
+        function safeCreateIcons() {
+            try {
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
+            } catch (err) {
+                console.warn('Icon render skipped:', err);
+            }
+        }
+
+        const STATUS_CONFIG = {
+            Present:     { bg: 'bg-emerald-500', text: 'text-white',     label: 'Present' },
+            Leave:       { bg: 'bg-slate-500',   text: 'text-white',     label: 'Leave' },
+            Absent:      { bg: 'bg-indigo-700',  text: 'text-white',     label: 'Absent' },
+            Holiday:     { bg: 'bg-amber-400',   text: 'text-slate-900', label: 'Holiday' },
+            Offday:      { bg: 'bg-slate-200',   text: 'text-slate-600', label: 'Offday' },
+            Outstation:  { bg: 'bg-cyan-400',    text: 'text-slate-900', label: 'Out Work' },
+            Late:        { bg: 'bg-pink-600',    text: 'text-white',     label: 'Late' },
+            Early_Going: { bg: 'bg-fuchsia-500', text: 'text-white',     label: 'Early Out' },
+            MissPunch:   { bg: 'bg-lime-600',    text: 'text-white',     label: 'MissPunch' }
+        };
+
+        const LEAVE_TYPES = ['Casual Leave', 'Earned Leave', 'Commuted Leave'];
+
+        const COLLEAGUE_THEMES = {
+            sky:      { banner: 'from-sky-200 via-blue-100 to-slate-100',      avatarBg: 'from-brand-600 to-brand-700' },
+            mint:     { banner: 'from-emerald-200 via-teal-100 to-slate-100',  avatarBg: 'from-emerald-600 to-teal-700' },
+            sunset:   { banner: 'from-amber-200 via-orange-100 to-rose-100',   avatarBg: 'from-accent-500 to-accent-600' },
+            lavender: { banner: 'from-violet-200 via-purple-100 to-slate-100', avatarBg: 'from-violet-600 to-indigo-700' }
+        };
+
+        /* Map common info labels (Mobile, ID, Room, Email, etc.) to clean Lucide icons */
+        function getInfoFieldIcon(label) {
+            const l = String(label || '').toLowerCase().trim();
+            if (/(phone|mobile|mob|tel|call|contact|cell|whatsapp|number|no\b)/.test(l)) return 'phone';
+            if (/(^id$|emp|employee|badge|code|roll|reg|gpf|pran|pan|aadhar|aadhaar)/.test(l)) return 'id-card';
+            if (/(email|mail)/.test(l)) return 'mail';
+            if (/(room|desk|cabin|office|block|dept|department|branch|wing|section|school)/.test(l)) return 'building-2';
+            if (/(time|shift|hour|timing)/.test(l)) return 'clock';
+            if (/(address|loc|location|place|city|post)/.test(l)) return 'map-pin';
+            if (/(note|remark|info|bio|about)/.test(l)) return 'sticky-note';
+            if (/(blood|med|health)/.test(l)) return 'heart-pulse';
+            if (/(date|join|dob|bday)/.test(l)) return 'calendar';
+            if (/(rank|grade|pay|scale|designation|post)/.test(l)) return 'award';
+            return 'tag';
+        }
+
+        /* ==========================================================================
+           DEFAULT STATE & LOCAL STORAGE PERSISTENCE
+           ========================================================================== */
+
+        function createDefaultState() {
+            const yr = TODAY.getFullYear();
+            const mo = TODAY.getMonth();
+            const dKey = (day) => toDateKey(new Date(yr, mo, Math.min(day, 28)));
+
+            const attendance = {};
+            attendance[dKey(2)]  = { status: 'Present', inTime: '09:20', outTime: '17:05', note: '' };
+            attendance[dKey(3)]  = { status: 'Late', inTime: '09:55', outTime: '17:10', note: 'Traffic delay' };
+            attendance[dKey(4)]  = { status: 'Leave', leaveType: 'Casual Leave', inTime: '', outTime: '', note: 'Family errand' };
+            attendance[dKey(5)]  = { status: 'Present', inTime: '09:15', outTime: '17:00', note: '' };
+            attendance[dKey(6)]  = { status: 'Outstation', inTime: '10:00', outTime: '16:30', note: 'DEO Office Visit' };
+            attendance[dKey(9)]  = { status: 'Present', inTime: '09:22', outTime: '17:02', note: '' };
+            attendance[dKey(10)] = { status: 'Early_Going', inTime: '09:18', outTime: '15:30', note: 'Bank work' };
+            attendance[dKey(11)] = { status: 'Leave', leaveType: 'Earned Leave', inTime: '', outTime: '', note: 'Planned leave' };
+
+            return {
+                profile: {
+                    name: 'Admin',
+                    bio: 'Government Office Staff managing daily attendance, official bills & records.',
+                    photo: '',
+                    weeklyOff: 0,
+                    shiftStart: '09:30',
+                    darkMode: false,
+                    info: [
+                        { label: 'ID', value: 'GOV-1042' },
+                        { label: 'Office', value: 'Main Block' },
+                        { label: 'Time', value: '09:30 AM' },
+                        { label: 'Mobile', value: '+91 98000 00000' }
+                    ]
+                },
+                session: {
+                    date: TODAY_KEY,
+                    punchedIn: false,
+                    inTime: '',
+                    outTime: '',
+                    onBreak: false,
+                    breakStartMs: null,
+                    totalBreakMins: 0
+                },
+                calendarView: { year: yr, month: mo },
+                attendance,
+                outOnWorkLogs: [
+                    {
+                        id: 'oow-1',
+                        date: dKey(6),
+                        mode: 'Full Day',
+                        startTime: '10:00',
+                        endTime: '16:30',
+                        meetingWith: 'District Education Office (DEO)',
+                        location: 'Collectorate Complex',
+                        remarks: 'Submitted quarterly grant utilization report.',
+                        attachment: ''
+                    }
+                ],
+                expenses: [
+                    { id: 'exp-1', date: dKey(6), title: 'Office Stationery & Registers', category: 'Office', amount: 1450, owner: 'headmaster', recovered: false, note: 'Voucher #112' },
+                    { id: 'exp-2', date: dKey(9), title: 'Official Travel Auto Fare', category: 'Travel', amount: 320, owner: 'headmaster', recovered: true, note: 'Treasury visit' },
+                    { id: 'exp-3', date: TODAY_KEY, title: 'Lunch & Tea', category: 'Food', amount: 180, owner: 'personal', recovered: false, note: '' }
+                ],
+                finances: [
+                    { id: 'fin-1', date: dKey(1), title: 'Monthly Salary', type: 'income', amount: 45000, status: 'received' },
+                    { id: 'fin-2', date: TODAY_KEY, title: 'TA / DA & Duty Allowance', type: 'advance', amount: 5000, status: 'pending' }
+                ],
+                reminders: [
+                    { id: 'rem-1', title: 'Institution Registration Certificate', category: 'Document', validFrom: '2026-01-01', validUntil: '2027-02-03', note: 'Renew 30 days before expiry with updated audit report.' },
+                    { id: 'rem-2', title: 'Fire Safety NOC', category: 'Compliance', validFrom: '2025-12-05', validUntil: '2026-12-05', note: 'Schedule inspection with local fire department.' },
+                    { id: 'rem-3', title: 'Broadband & Domain Contract', category: 'Contract', validFrom: '2025-11-10', validUntil: '2026-11-10', note: 'Invoice pending renewal.' }
+                ],
+                tasks: [
+                    { id: 'tsk-1', text: 'Verify monthly attendance register', done: true },
+                    { id: 'tsk-2', text: 'Submit Headmaster expense vouchers for reimbursement', done: false }
+                ],
+                colleagues: [
+                    {
+                        id: 'col-1',
+                        name: 'Rajesh Sharma',
+                        role: 'Headmaster — Oversees school & office administration.',
+                        theme: 'sky',
+                        photo: '',
+                        bgPhoto: '',
+                        info: [
+                            { label: 'ID', value: 'HM-001' },
+                            { label: 'Room', value: '101' },
+                            { label: 'Mobile', value: '+91 98765 43210' }
+                        ]
+                    },
+                    {
+                        id: 'col-2',
+                        name: 'Ananya Das',
+                        role: 'Senior Clerk — Accounts, vouchers & official records.',
+                        theme: 'mint',
+                        photo: '',
+                        bgPhoto: '',
+                        info: [
+                            { label: 'Desk', value: 'B-04' },
+                            { label: 'Mobile', value: '+91 91234 56789' },
+                            { label: 'Note', value: 'Handles monthly reimbursement vouchers every Friday.' }
+                        ]
+                    }
+                ]
+            };
+        }
+
+        let state = loadState();
+        let activeView = 'home';
+        let activeExpenseFilter = 'all';
+        let activeOowMode = 'Full Day';
+        let colleagueDraftPhotos = { photo: '', bgPhoto: '' };
+        let myProfileDraftPhoto = '';
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    const def = createDefaultState();
+                    return {
+                        ...def,
+                        ...parsed,
+                        profile: { ...def.profile, ...(parsed.profile || {}) },
+                        session: { ...def.session, ...(parsed.session || {}) },
+                        calendarView: { ...def.calendarView, ...(parsed.calendarView || {}) }
+                    };
+                }
+            } catch (e) {
+                console.warn('Could not load saved state, using defaults.', e);
+            }
+            return createDefaultState();
+        }
+
+        function persistState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn('Storage limit reached (likely large image).', e);
+            }
+        }
+
+        /* ==========================================================================
+           NAVIGATION, THEME, MODAL & TOAST
+           ========================================================================== */
+
+        function applyTheme() {
+            const isDark = Boolean(state.profile.darkMode);
+            document.documentElement.classList.toggle('dark', isDark);
+            const sw = document.getElementById('dark-mode-switch');
+            if (sw) sw.setAttribute('aria-checked', String(isDark));
+            const icon = document.getElementById('header-theme-icon');
+            if (icon) icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+            safeCreateIcons();
+        }
+
+        function toggleDarkMode() {
+            state.profile.darkMode = !state.profile.darkMode;
+            persistState();
+            applyTheme();
+            showToast(state.profile.darkMode ? 'Dark mode enabled' : 'Light mode enabled');
+        }
+
+        function switchView(viewName) {
+            activeView = viewName;
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) {
+                target.classList.remove('hidden');
+                // Retrigger smooth entrance micro-interaction
+                target.classList.remove('animate-fade-in');
+                void target.offsetWidth;
+                target.classList.add('animate-fade-in');
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const nav = btn.getAttribute('data-nav');
+                const pill = btn.querySelector('.nav-pill');
+                if (nav === viewName) {
+                    btn.classList.remove('text-slate-400');
+                    btn.classList.add('text-brand-600', 'dark:text-emerald-400', 'font-semibold');
+                    if (pill) {
+                        pill.classList.remove('bg-transparent');
+                        pill.classList.add('bg-brand-50', 'dark:bg-emerald-950/80');
+                    }
+                } else {
+                    btn.classList.remove('text-brand-600', 'dark:text-emerald-400', 'font-semibold');
+                    btn.classList.add('text-slate-400');
+                    if (pill) {
+                        pill.classList.remove('bg-brand-50', 'dark:bg-emerald-950/80');
+                        pill.classList.add('bg-transparent');
+                    }
+                }
+            });
+
+            if (viewName === 'home') renderHome();
+            if (viewName === 'attendance') renderCalendar();
+            if (viewName === 'out-on-work') initOowForm();
+            if (viewName === 'records') renderRecords();
+            if (viewName === 'expenses') renderExpenses();
+            if (viewName === 'finance') renderFinance();
+            if (viewName === 'reminders') renderReminders();
+            if (viewName === 'daily-activity') renderDailyTasks();
+            if (viewName === 'colleagues') renderColleagues();
+            if (viewName === 'profile') renderMyProfile();
+            if (viewName === 'more') renderSettings();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            safeCreateIcons();
+        }
+
+        function openModal(title, bodyHTML) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-body').innerHTML = bodyHTML;
+            document.getElementById('app-modal').classList.remove('hidden');
+            safeCreateIcons();
+        }
+
+        function closeModal() {
+            document.getElementById('app-modal').classList.add('hidden');
+        }
+
+        let toastTimer = null;
+        function showToast(msg, type = 'info') {
+            const el = document.getElementById('toast');
+            const bg = type === 'success' ? 'bg-brand-600' : (type === 'error' ? 'bg-rose-600' : 'bg-slate-900');
+            const icon = type === 'success' ? 'check-circle-2' : (type === 'error' ? 'alert-circle' : 'info');
+            el.className = `fixed top-4 left-1/2 -translate-x-1/2 z-[60] max-w-xs w-[90%] px-4 py-3 rounded-2xl shadow-xl text-[13px] font-semibold text-white flex items-center justify-center gap-2 animate-toast ${bg}`;
+            el.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 shrink-0"></i><span>${escapeHTML(msg)}</span>`;
+            el.classList.remove('hidden');
+            safeCreateIcons();
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+        }
+
+        function copyTextFallback(text, label) {
+            try {
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast(`Copied ${label || 'info'}!`, 'success');
+            } catch (err) {
+                showToast('Could not copy text', 'error');
+            }
+        }
+
+        function copyFromElement(btn) {
+            const val = btn.getAttribute('data-copy-val') || '';
+            const lbl = btn.getAttribute('data-copy-lbl') || 'info';
+            copyTextFallback(val, lbl);
+        }
+
+        /* ==========================================================================
+           HOME & ATTENDANCE PUNCH LOGIC
+           ========================================================================== */
+
+        function renderHeaderProfileCircle() {
+            const btn = document.getElementById('header-profile-btn');
+            if (!btn) return;
+            const initials = (state.profile.name || 'A').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'A';
+            if (state.profile.photo) {
+                btn.innerHTML = `<img src="${state.profile.photo}" alt="Profile" class="w-full h-full object-cover">`;
+            } else {
+                btn.textContent = initials;
+            }
+        }
+
+        function renderHome() {
+            document.getElementById('header-greeting').textContent = `Hello, ${state.profile.name || 'Admin'}`;
+            document.getElementById('today-date-label').textContent = `${DAY_NAMES[TODAY.getDay()]}, ${formatPrettyDate(TODAY_KEY)}`;
+            document.getElementById('home-weekly-off').textContent = `Weekly off - ${DAY_NAMES[Number(state.profile.weeklyOff) || 0]}`;
+            renderHeaderProfileCircle();
+
+            if (state.session.date !== TODAY_KEY) {
+                const todayRec = state.attendance[TODAY_KEY];
+                state.session = {
+                    date: TODAY_KEY,
+                    punchedIn: Boolean(todayRec && todayRec.inTime && !todayRec.outTime),
+                    inTime: todayRec ? (todayRec.inTime || '') : '',
+                    outTime: todayRec ? (todayRec.outTime || '') : '',
+                    onBreak: false,
+                    breakStartMs: null,
+                    totalBreakMins: 0
+                };
+            }
+
+            document.getElementById('home-in-time').textContent = formatTime12h(state.session.inTime);
+            document.getElementById('home-out-time').textContent = formatTime12h(state.session.outTime);
+
+            const punchBtn = document.getElementById('punch-btn');
+            const punchText = document.getElementById('punch-btn-text');
+            const punchIcon = document.getElementById('punch-btn-icon');
+            if (state.session.punchedIn) {
+                punchBtn.className = 'btn-tap w-full h-12 rounded-2xl font-semibold text-[15px] text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:brightness-105 shadow-md shadow-rose-500/20 flex items-center justify-center gap-2 mb-4';
+                punchText.textContent = 'Punch Out Now';
+                punchIcon.setAttribute('data-lucide', 'log-out');
+            } else {
+                punchBtn.className = 'btn-tap w-full h-12 rounded-2xl font-semibold text-[15px] text-white bg-gradient-to-r from-accent-500 to-accent-600 hover:brightness-105 shadow-md shadow-orange-500/20 flex items-center justify-center gap-2 mb-4';
+                punchText.textContent = state.session.outTime ? 'Punch In Again' : 'Punch In Now';
+                punchIcon.setAttribute('data-lucide', 'log-in');
+            }
+
+            const breakBtn = document.getElementById('break-btn');
+            const breakIcon = document.getElementById('break-btn-icon');
+            if (state.session.onBreak) {
+                breakBtn.className = 'btn-tap h-12 flex items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-200 ring-2 ring-amber-400';
+                breakBtn.title = 'End Break';
+                if (breakIcon) breakIcon.setAttribute('data-lucide', 'pause-circle');
+            } else {
+                breakBtn.className = 'btn-tap h-12 flex items-center justify-center rounded-2xl bg-[#eef3fc] dark:bg-sky-950/50 text-slate-800 dark:text-sky-200 hover:brightness-95';
+                breakBtn.title = 'Start Break';
+                if (breakIcon) breakIcon.setAttribute('data-lucide', 'coffee');
+            }
+            document.getElementById('break-status-pill').textContent = state.session.onBreak
+                ? 'On break now'
+                : `Breaks: ${state.session.totalBreakMins || 0}m`;
+
+            // Monthly attendance stats
+            const monthPrefix = `${TODAY.getFullYear()}-${String(TODAY.getMonth() + 1).padStart(2, '0')}`;
+            let presentCount = 0;
+            let outWorkCount = 0;
+            let leaveCount = 0;
+            Object.entries(state.attendance).forEach(([k, rec]) => {
+                if (!k.startsWith(monthPrefix)) return;
+                if (['Present', 'Late', 'Early_Going'].includes(rec.status)) presentCount++;
+                if (rec.status === 'Outstation') outWorkCount++;
+                if (rec.status === 'Leave') leaveCount++;
+            });
+            document.getElementById('stat-present').textContent = String(presentCount).padStart(2, '0');
+            document.getElementById('stat-outwork').textContent = String(outWorkCount).padStart(2, '0');
+            document.getElementById('stat-leaves').textContent = String(leaveCount).padStart(2, '0');
+
+            // Headmaster recoverable due
+            const hmDue = state.expenses
+                .filter(e => e.owner === 'headmaster' && !e.recovered)
+                .reduce((s, e) => s + Number(e.amount || 0), 0);
+            document.getElementById('home-hm-due').textContent = formatINR(hmDue);
+
+            // Key Dates alert dot if any item expired or expiring within 60 days
+            const hasAlert = state.reminders.some(r => getDaysUntil(r.validUntil) <= 60);
+            const badge = document.getElementById('reminder-badge');
+            if (hasAlert) badge.classList.remove('hidden');
+            else badge.classList.add('hidden');
+
+            safeCreateIcons();
+        }
+
+        function handlePunchToggle() {
+            const nowTime = getCurrentTime24();
+            if (!state.session.punchedIn) {
+                state.session.punchedIn = true;
+                if (!state.session.inTime) state.session.inTime = nowTime;
+                state.session.outTime = '';
+                const isLate = state.session.inTime > (state.profile.shiftStart || '09:30');
+                state.attendance[TODAY_KEY] = {
+                    ...(state.attendance[TODAY_KEY] || {}),
+                    status: isLate ? 'Late' : 'Present',
+                    inTime: state.session.inTime,
+                    outTime: ''
+                };
+                showToast(`Punched in at ${formatTime12h(state.session.inTime)}`, 'success');
+            } else {
+                if (state.session.onBreak) handleBreakToggle();
+                state.session.punchedIn = false;
+                state.session.outTime = nowTime;
+                const existing = state.attendance[TODAY_KEY] || { status: 'Present' };
+                state.attendance[TODAY_KEY] = {
+                    ...existing,
+                    inTime: state.session.inTime,
+                    outTime: nowTime
+                };
+                showToast(`Punched out at ${formatTime12h(nowTime)}`, 'success');
+            }
+            persistState();
+            renderHome();
+        }
+
+        function handleBreakToggle() {
+            if (!state.session.onBreak) {
+                state.session.onBreak = true;
+                state.session.breakStartMs = Date.now();
+                showToast('Break started');
+            } else {
+                const elapsedMins = Math.max(1, Math.round((Date.now() - (state.session.breakStartMs || Date.now())) / 60000));
+                state.session.totalBreakMins = (state.session.totalBreakMins || 0) + elapsedMins;
+                state.session.onBreak = false;
+                state.session.breakStartMs = null;
+                showToast(`Break ended (+${elapsedMins}m)`, 'success');
+            }
+            persistState();
+            renderHome();
+        }
+
+        function openMissedPunchModal(prefillDate) {
+            const dateVal = prefillDate || TODAY_KEY;
+            const existing = state.attendance[dateVal] || {};
+            openModal('Log / Correct Office Time', `
+                <form onsubmit="saveMissedPunch(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+                        <input type="date" id="mp-date" value="${dateVal}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">In Time</label>
+                            <input type="time" id="mp-in" value="${existing.inTime || '09:30'}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Out Time</label>
+                            <input type="time" id="mp-out" value="${existing.outTime || '17:00'}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Note (Optional)</label>
+                        <input type="text" id="mp-note" value="${escapeHTML(existing.note || '')}" placeholder="e.g., Forgot biometric punch" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save Time Entry</button>
+                </form>
+            `);
+        }
+
+        function saveMissedPunch(e) {
+            e.preventDefault();
+            const d = document.getElementById('mp-date').value;
+            const inT = document.getElementById('mp-in').value;
+            const outT = document.getElementById('mp-out').value;
+            const note = document.getElementById('mp-note').value.trim();
+            const isLate = inT > (state.profile.shiftStart || '09:30');
+            state.attendance[d] = { status: isLate ? 'Late' : 'Present', inTime: inT, outTime: outT, note };
+            if (d === TODAY_KEY) {
+                state.session.inTime = inT;
+                state.session.outTime = outT;
+                state.session.punchedIn = false;
+            }
+            persistState();
+            closeModal();
+            showToast('Office time updated', 'success');
+            if (activeView === 'attendance') renderCalendar();
+            else renderHome();
+        }
+
+        /* ==========================================================================
+           QUICK LEAVE MODAL (CASUAL / EARNED / COMMUTED ONLY)
+           ========================================================================== */
+
+        function openQuickLeaveModal() {
+            const options = LEAVE_TYPES.map(t => `<option value="${t}">${t}</option>`).join('');
+            openModal('Log Leave', `
+                <form onsubmit="saveQuickLeave(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Leave Type</label>
+                        <select id="ql-type" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">${options}</select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">From Date</label>
+                            <input type="date" id="ql-from" value="${TODAY_KEY}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">To Date</label>
+                            <input type="date" id="ql-to" value="${TODAY_KEY}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Reason / Note</label>
+                        <input type="text" id="ql-note" placeholder="Optional note" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save Leave</button>
+                </form>
+            `);
+        }
+
+        function saveQuickLeave(e) {
+            e.preventDefault();
+            const leaveType = document.getElementById('ql-type').value;
+            const fromStr = document.getElementById('ql-from').value;
+            const toStr = document.getElementById('ql-to').value;
+            const note = document.getElementById('ql-note').value.trim();
+
+            const start = new Date(fromStr + 'T00:00:00');
+            const end = new Date(toStr + 'T00:00:00');
+            if (end < start) {
+                showToast('End date cannot be before start date', 'error');
+                return;
+            }
+            let count = 0;
+            const cur = new Date(start);
+            while (cur <= end && count < 60) {
+                state.attendance[toDateKey(cur)] = { status: 'Leave', leaveType, inTime: '', outTime: '', note };
+                cur.setDate(cur.getDate() + 1);
+                count++;
+            }
+            persistState();
+            closeModal();
+            showToast(`${leaveType} saved (${count} day${count > 1 ? 's' : ''})`, 'success');
+            if (activeView === 'attendance') renderCalendar();
+            else if (activeView === 'records') renderRecords();
+            else renderHome();
+        }
+
+        /* ==========================================================================
+           ATTENDANCE CALENDAR
+           ========================================================================== */
+
+        function changeCalendarMonth(delta) {
+            let { year, month } = state.calendarView;
+            month += delta;
+            if (month < 0) { month = 11; year--; }
+            if (month > 11) { month = 0; year++; }
+            state.calendarView = { year, month };
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const { year, month } = state.calendarView;
+            document.getElementById('calendar-month-label').textContent = `${MONTH_NAMES[month]}, ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const weeklyOffDay = Number(state.profile.weeklyOff) || 0;
+
+            let html = '';
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="w-9 h-9"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dObj = new Date(year, month, day);
+                const key = toDateKey(dObj);
+                const rec = state.attendance[key];
+                const isToday = key === TODAY_KEY;
+                const isWeeklyOff = dObj.getDay() === weeklyOffDay;
+
+                let cls = 'bg-transparent text-slate-700 hover:bg-slate-100';
+                if (rec && STATUS_CONFIG[rec.status]) {
+                    cls = `${STATUS_CONFIG[rec.status].bg} ${STATUS_CONFIG[rec.status].text} shadow-xs`;
+                } else if (isWeeklyOff) {
+                    cls = `${STATUS_CONFIG.Offday.bg} ${STATUS_CONFIG.Offday.text}`;
+                }
+
+                const ring = isToday ? 'ring-2 ring-brand-600 ring-offset-2' : '';
+                html += `
+                    <button onclick="openDayEditor('${key}')" class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition active:scale-90 ${cls} ${ring}">
+                        ${String(day).padStart(2, '0')}
+                    </button>
+                `;
+            }
+
+            document.getElementById('calendar-grid').innerHTML = html;
+        }
+
+        function openDayEditor(dateKey) {
+            const rec = state.attendance[dateKey] || { status: 'Present', leaveType: 'Casual Leave', inTime: '09:30', outTime: '17:00', note: '' };
+            const statusOpts = Object.entries(STATUS_CONFIG)
+                .map(([k, v]) => `<option value="${k}" ${rec.status === k ? 'selected' : ''}>${v.label}</option>`)
+                .join('');
+            const leaveOpts = LEAVE_TYPES
+                .map(t => `<option value="${t}" ${(rec.leaveType || 'Casual Leave') === t ? 'selected' : ''}>${t}</option>`)
+                .join('');
+
+            openModal(`Edit ${formatPrettyDate(dateKey)}`, `
+                <form onsubmit="saveDayEditor(event, '${dateKey}')" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+                        <select id="de-status" onchange="toggleDayLeaveRow()" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">${statusOpts}</select>
+                    </div>
+                    <div id="de-leave-row" class="${rec.status === 'Leave' ? '' : 'hidden'}">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Leave Type</label>
+                        <select id="de-leave-type" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">${leaveOpts}</select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">In Time</label>
+                            <input type="time" id="de-in" value="${rec.inTime || ''}" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Out Time</label>
+                            <input type="time" id="de-out" value="${rec.outTime || ''}" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Notes</label>
+                        <input type="text" id="de-note" value="${escapeHTML(rec.note || '')}" placeholder="Optional note" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" onclick="clearDayRecord('${dateKey}')" class="px-4 py-3 rounded-full bg-slate-100 text-slate-600 text-xs font-semibold hover:bg-slate-200">Clear</button>
+                        <button type="submit" class="flex-1 py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save Day</button>
+                    </div>
+                </form>
+            `);
+        }
+
+        function toggleDayLeaveRow() {
+            const st = document.getElementById('de-status').value;
+            const row = document.getElementById('de-leave-row');
+            if (row) row.classList.toggle('hidden', st !== 'Leave');
+        }
+
+        function saveDayEditor(e, dateKey) {
+            e.preventDefault();
+            const status = document.getElementById('de-status').value;
+            const leaveType = status === 'Leave' ? document.getElementById('de-leave-type').value : '';
+            const inTime = document.getElementById('de-in').value;
+            const outTime = document.getElementById('de-out').value;
+            const note = document.getElementById('de-note').value.trim();
+            state.attendance[dateKey] = { status, leaveType, inTime, outTime, note };
+            persistState();
+            closeModal();
+            renderCalendar();
+            showToast('Attendance updated', 'success');
+        }
+
+        function clearDayRecord(dateKey) {
+            delete state.attendance[dateKey];
+            persistState();
+            closeModal();
+            renderCalendar();
+            showToast('Day cleared');
+        }
+
+        /* ==========================================================================
+           OFFICIAL DUTY (OUT ON WORK)
+           ========================================================================== */
+
+        function initOowForm() {
+            const dEl = document.getElementById('oow-date');
+            if (!dEl.value) dEl.value = TODAY_KEY;
+        }
+
+        function shiftOowDate(delta) {
+            const dEl = document.getElementById('oow-date');
+            const cur = new Date((dEl.value || TODAY_KEY) + 'T00:00:00');
+            cur.setDate(cur.getDate() + delta);
+            dEl.value = toDateKey(cur);
+        }
+
+        function selectOowMode(btn) {
+            activeOowMode = btn.getAttribute('data-mode') || 'Full Day';
+            document.querySelectorAll('.oow-mode-btn').forEach(b => {
+                b.className = 'oow-mode-btn py-2.5 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-600';
+            });
+            btn.className = 'oow-mode-btn py-2.5 rounded-xl border-2 border-brand-600 bg-brand-50 text-xs font-bold text-brand-700';
+        }
+
+        function captureLiveLocation() {
+            const lbl = document.getElementById('oow-location-label');
+            const hidden = document.getElementById('oow-location');
+            if (!navigator.geolocation) {
+                hidden.value = 'Manual Location Logged';
+                lbl.textContent = 'Location: Manual Entry';
+                showToast('GPS unavailable — saved manual tag');
+                return;
+            }
+            lbl.textContent = 'Fetching GPS...';
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const coords = `${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                    hidden.value = coords;
+                    lbl.textContent = `Pinned: ${coords}`;
+                    showToast('Live location attached', 'success');
+                },
+                () => {
+                    hidden.value = 'Office Field Visit (GPS Denied)';
+                    lbl.textContent = 'Location Tagged (Manual)';
+                    showToast('GPS permission denied — tagged manually');
+                },
+                { timeout: 6000 }
+            );
+        }
+
+        function handleOowFile(input) {
+            const file = input.files && input.files[0];
+            document.getElementById('oow-file-label').textContent = file ? `Attached: ${file.name}` : 'Attach order / photo (optional)';
+        }
+
+        function saveOutOnWork(e) {
+            e.preventDefault();
+            const date = document.getElementById('oow-date').value;
+            const startTime = document.getElementById('oow-start').value;
+            const endTime = document.getElementById('oow-end').value;
+            const meetingWith = document.getElementById('oow-client').value.trim();
+            const location = document.getElementById('oow-location').value.trim();
+            const remarks = document.getElementById('oow-remarks').value.trim();
+            const fileInput = document.getElementById('oow-file');
+            const attachment = (fileInput.files && fileInput.files[0]) ? fileInput.files[0].name : '';
+
+            state.outOnWorkLogs.unshift({
+                id: 'oow-' + Date.now(),
+                date,
+                mode: activeOowMode,
+                startTime,
+                endTime,
+                meetingWith,
+                location,
+                remarks,
+                attachment
+            });
+            state.attendance[date] = {
+                status: 'Outstation',
+                inTime: startTime,
+                outTime: endTime,
+                note: `Out Work: ${meetingWith}`
+            };
+            persistState();
+
+            document.getElementById('oow-form').reset();
+            document.getElementById('oow-date').value = TODAY_KEY;
+            document.getElementById('oow-location').value = '';
+            document.getElementById('oow-location-label').textContent = 'Add Live Location';
+            document.getElementById('oow-file-label').textContent = 'Attach order / photo (optional)';
+            showToast('Out Work saved & marked on calendar', 'success');
+            switchView('records');
+        }
+
+        /* ==========================================================================
+           ACTIVITY LEDGER
+           ========================================================================== */
+
+        function renderRecords() {
+            const vals = Object.values(state.attendance);
+            const present = vals.filter(v => ['Present', 'Late', 'Early_Going'].includes(v.status)).length;
+            const outWork = state.outOnWorkLogs.length;
+            const casual = vals.filter(v => v.status === 'Leave' && v.leaveType === 'Casual Leave').length;
+            const earned = vals.filter(v => v.status === 'Leave' && v.leaveType === 'Earned Leave').length;
+            const commuted = vals.filter(v => v.status === 'Leave' && v.leaveType === 'Commuted Leave').length;
+
+            document.getElementById('ledger-total-count').textContent = present + outWork + casual + earned + commuted + state.expenses.length;
+
+            const rows = [
+                { icon: 'calendar-check', tint: 'bg-[#eaf4f0]', label: 'Present Days',    count: present,               action: "switchView('attendance')" },
+                { icon: 'briefcase',      tint: 'bg-[#fdf0ee]', label: 'Out Work',        count: outWork,               action: "switchView('out-on-work')" },
+                { icon: 'calendar-minus', tint: 'bg-[#eef3fc]', label: 'Casual Leave',    count: casual,                action: 'openQuickLeaveModal()' },
+                { icon: 'calendar-plus',  tint: 'bg-[#f4eef9]', label: 'Earned Leave',    count: earned,                action: 'openQuickLeaveModal()' },
+                { icon: 'file-heart',     tint: 'bg-[#fdf6e7]', label: 'Commuted Leave',  count: commuted,              action: 'openQuickLeaveModal()' },
+                { icon: 'wallet',         tint: 'bg-[#eaf4f0]', label: 'Expenses Logged', count: state.expenses.length, action: "switchView('expenses')" }
+            ];
+
+            document.getElementById('ledger-summary-rows').innerHTML = rows.map(r => `
+                <button onclick="${r.action}" class="w-full px-4 py-3.5 flex items-center justify-between hover:bg-[#f7faf8] active:bg-slate-50 transition">
+                    <span class="flex items-center gap-3.5 text-sm font-semibold text-slate-800">
+                        <span class="w-10 h-10 rounded-full ${r.tint} text-slate-800 flex items-center justify-center shrink-0">
+                            <i data-lucide="${r.icon}" class="w-[18px] h-[18px]"></i>
+                        </span>
+                        ${r.label}
+                    </span>
+                    <span class="flex items-center gap-2 text-sm font-bold text-slate-900">
+                        ${String(r.count).padStart(2, '0')}
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+                    </span>
+                </button>
+            `).join('');
+
+            // Recent entries combined
+            const recent = [];
+            state.outOnWorkLogs.slice(0, 4).forEach(o => {
+                recent.push({
+                    date: o.date,
+                    title: o.meetingWith,
+                    sub: `${o.mode} • ${formatTime12h(o.startTime)}–${formatTime12h(o.endTime)}`,
+                    badge: 'Out Work',
+                    badgeCls: 'bg-cyan-50 text-cyan-700'
+                });
+            });
+            Object.entries(state.attendance)
+                .filter(([, r]) => r.status === 'Leave')
+                .sort((a, b) => b[0].localeCompare(a[0]))
+                .slice(0, 4)
+                .forEach(([d, r]) => {
+                    recent.push({
+                        date: d,
+                        title: r.leaveType || 'Leave',
+                        sub: r.note || 'Logged on calendar',
+                        badge: 'Leave',
+                        badgeCls: 'bg-slate-100 text-slate-700'
+                    });
+                });
+            recent.sort((a, b) => b.date.localeCompare(a.date));
+
+            const recentEl = document.getElementById('ledger-recent-list');
+            if (!recent.length) {
+                recentEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100">No recent entries yet.</div>`;
+            } else {
+                recentEl.innerHTML = recent.map(item => `
+                    <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-slate-800 truncate">${escapeHTML(item.title)}</p>
+                            <p class="text-[11px] text-slate-400 truncate">${formatPrettyDate(item.date)} • ${escapeHTML(item.sub)}</p>
+                        </div>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${item.badgeCls}">${item.badge}</span>
+                    </div>
+                `).join('');
+            }
+            safeCreateIcons();
+        }
+
+        /* ==========================================================================
+           EXPENSES (PERSONAL vs HEADMASTER)
+           ========================================================================== */
+
+        function setExpenseFilter(f) {
+            activeExpenseFilter = f;
+            ['all', 'headmaster', 'personal'].forEach(tab => {
+                const el = document.getElementById(`exp-tab-${tab}`);
+                if (!el) return;
+                el.className = tab === f
+                    ? 'py-2 rounded-lg bg-white text-slate-900 shadow-sm transition'
+                    : 'py-2 rounded-lg text-slate-600 hover:text-slate-900 transition';
+            });
+            renderExpenses();
+        }
+
+        function renderExpenses() {
+            const hmDue = state.expenses.filter(e => e.owner === 'headmaster' && !e.recovered).reduce((s, e) => s + Number(e.amount || 0), 0);
+            const hmRec = state.expenses.filter(e => e.owner === 'headmaster' && e.recovered).reduce((s, e) => s + Number(e.amount || 0), 0);
+            const personalTotal = state.expenses.filter(e => e.owner === 'personal').reduce((s, e) => s + Number(e.amount || 0), 0);
+
+            document.getElementById('exp-hm-due').textContent = formatINR(hmDue);
+            document.getElementById('exp-hm-recovered').textContent = `Recovered: ${formatINR(hmRec)}`;
+            document.getElementById('exp-personal-total').textContent = formatINR(personalTotal);
+            document.getElementById('exp-total-count').textContent = `${state.expenses.length} record${state.expenses.length === 1 ? '' : 's'}`;
+
+            const filtered = state.expenses.filter(e => activeExpenseFilter === 'all' || e.owner === activeExpenseFilter);
+            const listEl = document.getElementById('expenses-list');
+
+            if (!filtered.length) {
+                listEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100">No expenses in this category.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(exp => {
+                const isHM = exp.owner === 'headmaster';
+                const badge = isHM
+                    ? (exp.recovered
+                        ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">HM • Recovered</span>`
+                        : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-accent-600">HM • Due</span>`)
+                    : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Personal</span>`;
+
+                return `
+                    <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs space-y-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <p class="text-xs font-bold text-slate-900 truncate">${escapeHTML(exp.title)}</p>
+                                    ${badge}
+                                </div>
+                                <p class="text-[11px] text-slate-400 mt-0.5">${formatPrettyDate(exp.date)} • ${escapeHTML(exp.category)}${exp.note ? ' • ' + escapeHTML(exp.note) : ''}</p>
+                            </div>
+                            <span class="text-sm font-extrabold text-slate-900 shrink-0">${formatINR(exp.amount)}</span>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+                            ${isHM ? `
+                                <button onclick="toggleExpenseRecovered('${exp.id}')" class="text-[11px] font-semibold ${exp.recovered ? 'text-slate-500' : 'text-brand-600'} flex items-center gap-1 hover:underline">
+                                    <i data-lucide="${exp.recovered ? 'rotate-ccw' : 'check-circle-2'}" class="w-3.5 h-3.5"></i>
+                                    ${exp.recovered ? 'Mark as Due' : 'Mark Recovered'}
+                                </button>
+                            ` : `<span class="text-[10px] text-slate-400">Personal expense</span>`}
+                            <button onclick="deleteExpense('${exp.id}')" class="text-[11px] font-semibold text-rose-500 hover:text-rose-700 flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            safeCreateIcons();
+        }
+
+        function openExpenseModal() {
+            openModal('Add Expense', `
+                <form onsubmit="saveExpense(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1.5">Paid For</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="exp-owner" value="headmaster" checked class="peer hidden">
+                                <div class="py-2.5 px-3 rounded-xl border border-slate-200 text-center text-xs font-semibold text-slate-600 peer-checked:border-accent-500 peer-checked:bg-orange-50 peer-checked:text-accent-600 transition">Headmaster (Recoverable)</div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="exp-owner" value="personal" class="peer hidden">
+                                <div class="py-2.5 px-3 rounded-xl border border-slate-200 text-center text-xs font-semibold text-slate-600 peer-checked:border-brand-600 peer-checked:bg-brand-50 peer-checked:text-brand-700 transition">Personal</div>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Title</label>
+                        <input type="text" id="exp-title" required placeholder="e.g., Stationery / Printing / Travel" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Amount (₹)</label>
+                            <input type="number" id="exp-amount" min="1" required placeholder="500" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+                            <input type="date" id="exp-date" value="${TODAY_KEY}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+                            <select id="exp-cat" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                                <option>Office</option>
+                                <option>Travel</option>
+                                <option>Food</option>
+                                <option>Printing</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Voucher / Note</label>
+                            <input type="text" id="exp-note" placeholder="Optional" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save Expense</button>
+                </form>
+            `);
+        }
+
+        function saveExpense(e) {
+            e.preventDefault();
+            const owner = document.querySelector('input[name="exp-owner"]:checked')?.value || 'personal';
+            state.expenses.unshift({
+                id: 'exp-' + Date.now(),
+                title: document.getElementById('exp-title').value.trim(),
+                amount: Number(document.getElementById('exp-amount').value || 0),
+                date: document.getElementById('exp-date').value,
+                category: document.getElementById('exp-cat').value,
+                note: document.getElementById('exp-note').value.trim(),
+                owner,
+                recovered: false
+            });
+            persistState();
+            closeModal();
+            renderExpenses();
+            showToast('Expense added', 'success');
+        }
+
+        function toggleExpenseRecovered(id) {
+            const item = state.expenses.find(e => e.id === id);
+            if (!item) return;
+            item.recovered = !item.recovered;
+            persistState();
+            renderExpenses();
+            showToast(item.recovered ? 'Marked as recovered' : 'Marked as due', 'success');
+        }
+
+        function deleteExpense(id) {
+            state.expenses = state.expenses.filter(e => e.id !== id);
+            persistState();
+            renderExpenses();
+            showToast('Expense deleted');
+        }
+
+        /* ==========================================================================
+           PAY & FINANCE
+           ========================================================================== */
+
+        function renderFinance() {
+            const totalReceived = state.finances.filter(f => f.status === 'received').reduce((s, f) => s + Number(f.amount || 0), 0);
+            const totalPending = state.finances.filter(f => f.status !== 'received').reduce((s, f) => s + Number(f.amount || 0), 0);
+            const personalSpent = state.expenses.filter(e => e.owner === 'personal').reduce((s, e) => s + Number(e.amount || 0), 0);
+
+            document.getElementById('finance-total-income').textContent = formatINR(totalReceived);
+            document.getElementById('finance-total-pending').textContent = formatINR(totalPending);
+            document.getElementById('finance-net-balance').textContent = formatINR(totalReceived - personalSpent);
+
+            const listEl = document.getElementById('finance-list');
+            if (!state.finances.length) {
+                listEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100">No pay or bill records yet.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = state.finances.map(f => {
+                const isRec = f.status === 'received';
+                return `
+                    <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs flex items-center justify-between gap-2">
+                        <div class="min-w-0">
+                            <p class="text-xs font-bold text-slate-900 truncate">${escapeHTML(f.title)}</p>
+                            <p class="text-[11px] text-slate-400">${formatPrettyDate(f.date)}</p>
+                            <div class="flex items-center gap-3 mt-1.5">
+                                <button onclick="toggleFinanceStatus('${f.id}')" class="text-[10px] font-bold px-2.5 py-0.5 rounded-full ${isRec ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}">
+                                    ${isRec ? 'Received' : 'Pending (Tap to mark)'}
+                                </button>
+                                <button onclick="deleteFinance('${f.id}')" class="text-[10px] font-semibold text-rose-500 hover:underline">Delete</button>
+                            </div>
+                        </div>
+                        <span class="text-sm font-extrabold ${isRec ? 'text-emerald-700' : 'text-amber-600'} shrink-0">+${formatINR(f.amount)}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openIncomeModal() {
+            openModal('Add Salary / Allowance / Bill', `
+                <form onsubmit="saveFinance(event)" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Description</label>
+                        <input type="text" id="fin-title" required placeholder="e.g., Monthly Salary / DA Arrears / TA Bill" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Amount (₹)</label>
+                            <input type="number" id="fin-amount" min="1" required placeholder="45000" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Date</label>
+                            <input type="date" id="fin-date" value="${TODAY_KEY}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Status</label>
+                        <select id="fin-status" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                            <option value="received">Received</option>
+                            <option value="pending">Pending Arrears / Bill</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save Entry</button>
+                </form>
+            `);
+        }
+
+        function saveFinance(e) {
+            e.preventDefault();
+            state.finances.unshift({
+                id: 'fin-' + Date.now(),
+                title: document.getElementById('fin-title').value.trim(),
+                amount: Number(document.getElementById('fin-amount').value || 0),
+                date: document.getElementById('fin-date').value,
+                status: document.getElementById('fin-status').value,
+                type: 'income'
+            });
+            persistState();
+            closeModal();
+            renderFinance();
+            showToast('Pay record saved', 'success');
+        }
+
+        function toggleFinanceStatus(id) {
+            const item = state.finances.find(f => f.id === id);
+            if (!item) return;
+            item.status = item.status === 'received' ? 'pending' : 'received';
+            persistState();
+            renderFinance();
+            showToast(`Marked as ${item.status}`, 'success');
+        }
+
+        function deleteFinance(id) {
+            state.finances = state.finances.filter(f => f.id !== id);
+            persistState();
+            renderFinance();
+            showToast('Entry deleted');
+        }
+
+        /* ==========================================================================
+           KEY DATES (VALIDITY FROM → UNTIL & EXPIRY COUNTDOWN)
+           ========================================================================== */
+
+        function getDaysUntil(dateStr) {
+            if (!dateStr) return 9999;
+            const target = new Date(dateStr + 'T00:00:00');
+            const now = new Date(TODAY_KEY + 'T00:00:00');
+            return Math.round((target - now) / (1000 * 60 * 60 * 24));
+        }
+
+        function renderReminders() {
+            const filter = document.getElementById('reminder-filter')?.value || 'all';
+            const sorted = [...state.reminders].sort((a, b) => (a.validUntil || '').localeCompare(b.validUntil || ''));
+            const filtered = sorted.filter(r => {
+                const days = getDaysUntil(r.validUntil);
+                if (filter === 'soon') return days >= 0 && days <= 60;
+                if (filter === 'expired') return days < 0;
+                return true;
+            });
+
+            document.getElementById('reminder-count-label').textContent = `${filtered.length} item${filtered.length === 1 ? '' : 's'}`;
+            const listEl = document.getElementById('reminders-list');
+
+            if (!filtered.length) {
+                listEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100">No key dates found. Tap + to add one.</div>`;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(r => {
+                const days = getDaysUntil(r.validUntil);
+                let badgeText = `Active (${days}d left)`;
+                let badgeCls = 'bg-emerald-50 text-emerald-700';
+                let barCls = 'bg-brand-500';
+                if (days < 0) {
+                    badgeText = `Expired ${Math.abs(days)}d ago`;
+                    badgeCls = 'bg-rose-50 text-rose-700';
+                    barCls = 'bg-rose-500';
+                } else if (days <= 60) {
+                    badgeText = days === 0 ? 'Expires Today' : `Expires in ${days}d`;
+                    badgeCls = 'bg-amber-50 text-amber-700';
+                    barCls = 'bg-amber-500';
+                }
+
+                // Validity progress bar calculation
+                let pct = 100;
+                if (r.validFrom && r.validUntil) {
+                    const startMs = new Date(r.validFrom + 'T00:00:00').getTime();
+                    const endMs = new Date(r.validUntil + 'T00:00:00').getTime();
+                    const nowMs = new Date(TODAY_KEY + 'T00:00:00').getTime();
+                    if (endMs > startMs) {
+                        pct = Math.max(0, Math.min(100, Math.round(((nowMs - startMs) / (endMs - startMs)) * 100)));
+                    }
+                }
+
+                return `
+                    <div class="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs space-y-2.5">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="min-w-0">
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">${escapeHTML(r.category || 'Document')}</span>
+                                <h4 class="text-sm font-bold text-slate-900 leading-snug">${escapeHTML(r.title)}</h4>
+                            </div>
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full shrink-0 ${badgeCls}">${badgeText}</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-medium text-slate-600 bg-slate-50 rounded-xl px-3 py-2">
+                            <span>${formatPrettyDate(r.validFrom)}</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-400"></i>
+                            <span class="font-bold text-slate-900">${formatPrettyDate(r.validUntil)}</span>
+                        </div>
+                        <div class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                            <div class="h-full rounded-full ${barCls}" style="width: ${pct}%"></div>
+                        </div>
+                        ${r.note ? `<p class="text-[11px] text-slate-500">${escapeHTML(r.note)}</p>` : ''}
+                        <div class="flex items-center justify-end gap-3 pt-1">
+                            <button onclick="openReminderModal('${r.id}')" class="text-[11px] font-semibold text-brand-600 hover:underline">Edit</button>
+                            <button onclick="deleteReminder('${r.id}')" class="text-[11px] font-semibold text-rose-500 hover:underline">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            safeCreateIcons();
+        }
+
+        function openReminderModal(editId) {
+            const existing = editId ? state.reminders.find(r => r.id === editId) : null;
+            openModal(existing ? 'Edit Key Date' : 'Add Key Date', `
+                <form onsubmit="saveReminder(event, '${editId || ''}')" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Title / Document Name</label>
+                        <input type="text" id="rem-title" value="${escapeHTML(existing ? existing.title : '')}" required placeholder="e.g., Affiliation Certificate / Lease" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Category</label>
+                        <select id="rem-cat" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                            ${['Document', 'Compliance', 'Contract', 'License', 'Other'].map(c => `<option ${existing && existing.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Valid From</label>
+                            <input type="date" id="rem-from" value="${existing ? existing.validFrom : TODAY_KEY}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Valid Until</label>
+                            <input type="date" id="rem-until" value="${existing ? existing.validUntil : ''}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Notes</label>
+                        <textarea id="rem-note" rows="2" placeholder="Renewal steps or remarks" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">${escapeHTML(existing ? existing.note : '')}</textarea>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">${existing ? 'Update Key Date' : 'Save Key Date'}</button>
+                </form>
+            `);
+        }
+
+        function saveReminder(e, editId) {
+            e.preventDefault();
+            const payload = {
+                id: editId || ('rem-' + Date.now()),
+                title: document.getElementById('rem-title').value.trim(),
+                category: document.getElementById('rem-cat').value,
+                validFrom: document.getElementById('rem-from').value,
+                validUntil: document.getElementById('rem-until').value,
+                note: document.getElementById('rem-note').value.trim()
+            };
+            if (editId) {
+                const idx = state.reminders.findIndex(r => r.id === editId);
+                if (idx >= 0) state.reminders[idx] = payload;
+            } else {
+                state.reminders.unshift(payload);
+            }
+            persistState();
+            closeModal();
+            renderReminders();
+            showToast('Key date saved', 'success');
+        }
+
+        function deleteReminder(id) {
+            state.reminders = state.reminders.filter(r => r.id !== id);
+            persistState();
+            renderReminders();
+            showToast('Key date removed');
+        }
+
+        /* ==========================================================================
+           DAILY TASKS
+           ========================================================================== */
+
+        function renderDailyTasks() {
+            const listEl = document.getElementById('daily-tasks-list');
+            if (!state.tasks.length) {
+                listEl.innerHTML = `<div class="bg-white rounded-2xl p-6 text-center text-xs text-slate-400 border border-slate-100">No tasks yet. Add one above!</div>`;
+                return;
+            }
+            listEl.innerHTML = state.tasks.map(t => `
+                <div class="bg-white rounded-2xl px-4 py-3 border border-slate-100 shadow-xs flex items-center justify-between gap-3">
+                    <button onclick="toggleDailyTask('${t.id}')" class="flex items-center gap-3 text-left flex-1 min-w-0">
+                        <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${t.done ? 'bg-brand-600 border-brand-600 text-white' : 'border-slate-300'}">
+                            ${t.done ? '<i data-lucide="check" class="w-3 h-3"></i>' : ''}
+                        </span>
+                        <span class="text-xs font-medium ${t.done ? 'line-through text-slate-400' : 'text-slate-800'} truncate">${escapeHTML(t.text)}</span>
+                    </button>
+                    <button onclick="deleteDailyTask('${t.id}')" class="text-slate-400 hover:text-rose-500 p-1">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            safeCreateIcons();
+        }
+
+        function addDailyTask(e) {
+            e.preventDefault();
+            const inp = document.getElementById('new-task-input');
+            const text = inp.value.trim();
+            if (!text) return;
+            state.tasks.unshift({ id: 'tsk-' + Date.now(), text, done: false });
+            inp.value = '';
+            persistState();
+            renderDailyTasks();
+        }
+
+        function toggleDailyTask(id) {
+            const t = state.tasks.find(x => x.id === id);
+            if (!t) return;
+            t.done = !t.done;
+            persistState();
+            renderDailyTasks();
+        }
+
+        function deleteDailyTask(id) {
+            state.tasks = state.tasks.filter(x => x.id !== id);
+            persistState();
+            renderDailyTasks();
+        }
+
+        /* ==========================================================================
+           AUTO-ADJUSTING INFO GRID HELPER (USED BY COLLEAGUES & MY PROFILE)
+           ========================================================================== */
+
+        function renderAutoAdjustInfoBlock(infoList, darkMode) {
+            const items = (infoList || []).filter(i => i && (i.label || i.value));
+            if (!items.length) return '';
+
+            const shortItems = items.filter(i => String(i.value || '').length <= 16 && String(i.label || '').length <= 14);
+            const longItems = items.filter(i => !(String(i.value || '').length <= 16 && String(i.label || '').length <= 14));
+
+            let html = '';
+
+            if (shortItems.length) {
+                const cols = shortItems.length === 1 ? 'grid-cols-1' : (shortItems.length === 2 ? 'grid-cols-2' : 'grid-cols-3');
+                const boxCls = darkMode
+                    ? 'bg-white/5 border border-white/10 divide-white/10'
+                    : 'bg-[#f4f7f5] border border-slate-100 divide-slate-200/70';
+                const valCls = darkMode ? 'text-white' : 'text-slate-900';
+                const iconCls = darkMode ? 'text-neutral-400' : 'text-brand-600';
+
+                html += `
+                    <div class="rounded-2xl overflow-hidden ${boxCls} grid ${cols} divide-x">
+                        ${shortItems.map(item => {
+                            const icon = getInfoFieldIcon(item.label);
+                            return `
+                                <button type="button" data-copy-val="${escapeHTML(item.value)}" data-copy-lbl="${escapeHTML(item.label)}" onclick="copyFromElement(this)" class="p-3 text-center hover:bg-black/5 transition flex flex-col items-center justify-center gap-1 min-w-0" title="${escapeHTML(item.label)} — tap to copy">
+                                    <i data-lucide="${icon}" class="w-3.5 h-3.5 ${iconCls}"></i>
+                                    <span class="text-xs font-bold ${valCls} truncate max-w-full">${escapeHTML(item.value)}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            }
+
+            if (longItems.length) {
+                const rowCls = darkMode
+                    ? 'bg-white/5 border border-white/10 text-neutral-200 hover:bg-white/10'
+                    : 'bg-[#f4f7f5] border border-slate-100 text-slate-700 hover:bg-[#eaf1ed]';
+                const iconCls = darkMode ? 'text-neutral-400' : 'text-brand-600';
+
+                html += `<div class="space-y-2 ${shortItems.length ? 'mt-2.5' : ''}">` + longItems.map(item => {
+                    const icon = getInfoFieldIcon(item.label);
+                    return `
+                        <button type="button" data-copy-val="${escapeHTML(item.value)}" data-copy-lbl="${escapeHTML(item.label)}" onclick="copyFromElement(this)" class="w-full rounded-2xl px-3.5 py-2.5 text-left transition flex items-start gap-2.5 ${rowCls}" title="${escapeHTML(item.label)} — tap to copy">
+                            <i data-lucide="${icon}" class="w-4 h-4 mt-0.5 shrink-0 ${iconCls}"></i>
+                            <span class="text-xs font-medium leading-relaxed break-words flex-1">${escapeHTML(item.value)}</span>
+                        </button>
+                    `;
+                }).join('') + `</div>`;
+            }
+
+            return html;
+        }
+
+        function addDynamicInfoRow(containerId, label = '', value = '') {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const row = document.createElement('div');
+            row.className = 'info-editor-row flex items-center gap-2';
+            row.innerHTML = `
+                <input type="text" class="info-lbl w-2/5 text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2" placeholder="Label (e.g. Mobile)" value="${escapeHTML(label)}">
+                <input type="text" class="info-val flex-1 text-xs bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2" placeholder="Value" value="${escapeHTML(value)}">
+                <button type="button" onclick="this.parentElement.remove()" class="p-1.5 text-slate-400 hover:text-rose-500 shrink-0" title="Remove">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            `;
+            container.appendChild(row);
+            safeCreateIcons();
+        }
+
+        /* Performance: resize & compress uploaded images before saving to localStorage */
+        function readImageAsDataURL(file, callback) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    try {
+                        const maxDim = 640;
+                        let { width, height } = img;
+                        if (width > maxDim || height > maxDim) {
+                            const ratio = Math.min(maxDim / width, maxDim / height);
+                            width = Math.round(width * ratio);
+                            height = Math.round(height * ratio);
+                        }
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        callback(canvas.toDataURL('image/jpeg', 0.8));
+                    } catch (e) {
+                        callback(ev.target.result);
+                    }
+                };
+                img.onerror = () => callback(ev.target.result);
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        /* ==========================================================================
+           COLLEAGUES DIRECTORY (CLOUD BANNER + COVER/AVATAR + AUTO-ADJUST INFO)
+           ========================================================================== */
+
+        function renderColleagues() {
+            const q = (document.getElementById('colleague-search')?.value || '').toLowerCase().trim();
+            const list = state.colleagues.filter(c => {
+                if (!q) return true;
+                const inMain = (c.name + ' ' + c.role).toLowerCase().includes(q);
+                const inInfo = (c.info || []).some(i => (i.label + ' ' + i.value).toLowerCase().includes(q));
+                return inMain || inInfo;
+            });
+
+            const container = document.getElementById('colleagues-list');
+            if (!list.length) {
+                container.innerHTML = `<div class="bg-white rounded-3xl p-8 text-center text-xs text-slate-400 border border-slate-100">No colleagues found. Tap <b>+ Add</b> to create a card.</div>`;
+                return;
+            }
+
+            container.innerHTML = list.map(c => {
+                const th = COLLEAGUE_THEMES[c.theme] || COLLEAGUE_THEMES.sky;
+                const initials = (c.name || 'C').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('');
+                const bannerContent = c.bgPhoto
+                    ? `<img src="${c.bgPhoto}" alt="Cover" class="w-full h-full object-cover">`
+                    : `<div class="w-full h-full bg-gradient-to-br ${th.banner} relative overflow-hidden">
+                            <div class="absolute -bottom-6 -left-6 w-28 h-28 rounded-full bg-white/45 blur-md"></div>
+                            <div class="absolute top-2 right-8 w-24 h-24 rounded-full bg-white/55 blur-md"></div>
+                       </div>`;
+
+                const avatarContent = c.photo
+                    ? `<img src="${c.photo}" alt="${escapeHTML(c.name)}" class="w-full h-full object-cover">`
+                    : `<div class="w-full h-full bg-gradient-to-br ${th.avatarBg} flex items-center justify-center text-white text-xl font-extrabold">${escapeHTML(initials)}</div>`;
+
+                return `
+                    <div class="surface-card bg-white rounded-[28px] p-3 shadow-sm border border-slate-100">
+                        <!-- Top Banner -->
+                        <div class="relative h-28 rounded-[22px] overflow-hidden">
+                            ${bannerContent}
+                            <button onclick="openColleagueModal('${c.id}')" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 dark:bg-black/80 backdrop-blur-xs text-slate-700 dark:text-white shadow-sm flex items-center justify-center hover:bg-white active:scale-95 transition" title="Edit Colleague">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- Overlapping Circular Avatar (Left Aligned) -->
+                        <div class="-mt-11 flex justify-start pl-3 relative z-10">
+                            <div class="p-[3px] rounded-full bg-gradient-to-tr from-emerald-400 via-teal-400 to-amber-300 shadow-md">
+                                <div class="w-20 h-20 rounded-full border-[3px] border-white dark:border-black overflow-hidden bg-white dark:bg-black">
+                                    ${avatarContent}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Name & Role -->
+                        <div class="text-left px-3 pt-2 pb-3">
+                            <h3 class="text-base font-extrabold text-slate-900">${escapeHTML(c.name)}</h3>
+                            ${c.role ? `<p class="text-xs text-slate-500 mt-1 leading-relaxed">${escapeHTML(c.role)}</p>` : ''}
+                        </div>
+
+                        <!-- Auto-Adjusting Info Grid -->
+                        <div class="px-1 pb-1">
+                            ${renderAutoAdjustInfoBlock(c.info, false)}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            safeCreateIcons();
+        }
+
+        function openColleagueModal(editId) {
+            const existing = editId ? state.colleagues.find(c => c.id === editId) : null;
+            colleagueDraftPhotos = {
+                photo: existing ? (existing.photo || '') : '',
+                bgPhoto: existing ? (existing.bgPhoto || '') : ''
+            };
+
+            openModal(existing ? 'Edit Colleague' : 'Add Colleague', `
+                <form onsubmit="saveColleague(event, '${editId || ''}')" class="space-y-3.5">
+                    <!-- Profile Pic & Cover Pic Uploaders -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-center space-y-2">
+                            <div id="col-photo-preview" class="w-12 h-12 rounded-full mx-auto bg-brand-100 text-brand-700 overflow-hidden flex items-center justify-center">
+                                ${colleagueDraftPhotos.photo ? `<img src="${colleagueDraftPhotos.photo}" class="w-full h-full object-cover">` : `<i data-lucide="user" class="w-5 h-5"></i>`}
+                            </div>
+                            <div class="flex items-center justify-center gap-2">
+                                <label class="text-[11px] font-semibold text-brand-600 cursor-pointer hover:underline">
+                                    Profile Pic
+                                    <input type="file" accept="image/*" class="hidden" onchange="handleColleagueImg(this, 'photo')">
+                                </label>
+                                ${colleagueDraftPhotos.photo ? `<button type="button" onclick="clearColleagueImg('photo')" class="text-[10px] text-rose-500">Clear</button>` : ''}
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-2.5 text-center space-y-2">
+                            <div id="col-bg-preview" class="w-full h-12 rounded-xl bg-sky-100 text-sky-600 overflow-hidden flex items-center justify-center">
+                                ${colleagueDraftPhotos.bgPhoto ? `<img src="${colleagueDraftPhotos.bgPhoto}" class="w-full h-full object-cover">` : `<i data-lucide="image" class="w-5 h-5"></i>`}
+                            </div>
+                            <div class="flex items-center justify-center gap-2">
+                                <label class="text-[11px] font-semibold text-brand-600 cursor-pointer hover:underline">
+                                    Cover Pic
+                                    <input type="file" accept="image/*" class="hidden" onchange="handleColleagueImg(this, 'bgPhoto')">
+                                </label>
+                                ${colleagueDraftPhotos.bgPhoto ? `<button type="button" onclick="clearColleagueImg('bgPhoto')" class="text-[10px] text-rose-500">Clear</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Full Name</label>
+                        <input type="text" id="col-name" value="${escapeHTML(existing ? existing.name : '')}" required placeholder="e.g., Rajesh Sharma" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Designation / Short Bio</label>
+                        <input type="text" id="col-role" value="${escapeHTML(existing ? existing.role : '')}" placeholder="e.g., Headmaster / Senior Clerk" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Banner Tint (if no Cover Pic)</label>
+                        <select id="col-theme" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">
+                            ${['sky', 'mint', 'sunset', 'lavender'].map(t => `<option value="${t}" ${existing && existing.theme === t ? 'selected' : ''}>${t[0].toUpperCase() + t.slice(1)}</option>`).join('')}
+                        </select>
+                    </div>
+
+                    <!-- Custom Info Fields -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-semibold text-slate-600">Custom Info (Auto-adjusts)</label>
+                            <button type="button" onclick="addDynamicInfoRow('col-info-rows')" class="text-[11px] font-bold text-brand-600 hover:underline">+ Add Field</button>
+                        </div>
+                        <div id="col-info-rows" class="space-y-2"></div>
+                    </div>
+
+                    <div class="flex gap-2 pt-1">
+                        ${existing ? `<button type="button" onclick="deleteColleague('${existing.id}')" class="px-4 py-3 rounded-full bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-100">Delete</button>` : ''}
+                        <button type="submit" class="flex-1 py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">${existing ? 'Save Changes' : 'Add Colleague'}</button>
+                    </div>
+                </form>
+            `);
+
+            const initialRows = existing && existing.info && existing.info.length
+                ? existing.info
+                : [{ label: 'Mobile', value: '' }, { label: 'ID', value: '' }];
+            initialRows.forEach(r => addDynamicInfoRow('col-info-rows', r.label, r.value));
+        }
+
+        function handleColleagueImg(input, field) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            readImageAsDataURL(file, (dataUrl) => {
+                colleagueDraftPhotos[field] = dataUrl;
+                const prevId = field === 'photo' ? 'col-photo-preview' : 'col-bg-preview';
+                const prev = document.getElementById(prevId);
+                if (prev) prev.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+            });
+        }
+
+        function clearColleagueImg(field) {
+            colleagueDraftPhotos[field] = '';
+            const prevId = field === 'photo' ? 'col-photo-preview' : 'col-bg-preview';
+            const prev = document.getElementById(prevId);
+            if (prev) prev.innerHTML = `<i data-lucide="${field === 'photo' ? 'user' : 'image'}" class="w-5 h-5"></i>`;
+            safeCreateIcons();
+        }
+
+        function saveColleague(e, editId) {
+            e.preventDefault();
+            const info = [];
+            document.querySelectorAll('#col-info-rows .info-editor-row').forEach(row => {
+                const label = row.querySelector('.info-lbl').value.trim();
+                const value = row.querySelector('.info-val').value.trim();
+                if (label || value) info.push({ label: label || 'Info', value });
+            });
+
+            const payload = {
+                id: editId || ('col-' + Date.now()),
+                name: document.getElementById('col-name').value.trim(),
+                role: document.getElementById('col-role').value.trim(),
+                theme: document.getElementById('col-theme').value,
+                photo: colleagueDraftPhotos.photo,
+                bgPhoto: colleagueDraftPhotos.bgPhoto,
+                info
+            };
+
+            if (editId) {
+                const idx = state.colleagues.findIndex(c => c.id === editId);
+                if (idx >= 0) state.colleagues[idx] = payload;
+            } else {
+                state.colleagues.unshift(payload);
+            }
+            persistState();
+            closeModal();
+            renderColleagues();
+            showToast('Colleague saved', 'success');
+        }
+
+        function deleteColleague(id) {
+            state.colleagues = state.colleagues.filter(c => c.id !== id);
+            persistState();
+            closeModal();
+            renderColleagues();
+            showToast('Colleague removed');
+        }
+
+        /* ==========================================================================
+           MY PROFILE (DARK PORTRAIT CARD)
+           ========================================================================== */
+
+        function renderMyProfile() {
+            const p = state.profile;
+            const initials = (p.name || 'A').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'A';
+
+            const portrait = p.photo
+                ? `<img src="${p.photo}" alt="My Photo" class="w-full h-full object-cover">`
+                : `<div class="w-full h-full bg-gradient-to-br from-brand-700 via-brand-600 to-neutral-800 flex flex-col items-center justify-center gap-2">
+                        <span class="text-5xl font-extrabold text-white/90">${escapeHTML(initials)}</span>
+                        <span class="text-[11px] text-emerald-100/70">Tap camera to add your photo</span>
+                   </div>`;
+
+            document.getElementById('my-profile-card').innerHTML = `
+                <!-- Large Rounded Portrait -->
+                <div class="relative h-72 rounded-[22px] overflow-hidden bg-neutral-800">
+                    ${portrait}
+                    <label class="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-neutral-950/70 backdrop-blur-md text-white border border-white/20 flex items-center justify-center cursor-pointer hover:bg-neutral-900 active:scale-95 transition" title="Upload Photo">
+                        <i data-lucide="camera" class="w-4 h-4"></i>
+                        <input type="file" accept="image/*" class="hidden" onchange="uploadMyQuickPhoto(this)">
+                    </label>
+                </div>
+
+                <!-- Name + Verified Badge + Bio -->
+                <div class="px-2.5 pt-4 pb-3">
+                    <div class="flex items-center gap-2">
+                        <h3 class="text-xl font-extrabold text-white tracking-tight">${escapeHTML(p.name || 'Admin')}</h3>
+                        <span class="w-5 h-5 rounded-full bg-emerald-500 text-neutral-950 flex items-center justify-center shrink-0">
+                            <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+                        </span>
+                    </div>
+                    <p class="text-xs text-neutral-400 mt-1.5 leading-relaxed">${escapeHTML(p.bio || 'Tap Edit Info to add your designation & details.')}</p>
+                </div>
+
+                <!-- Auto-Adjusting Custom Info -->
+                <div class="px-1.5 pb-3">
+                    ${renderAutoAdjustInfoBlock(p.info, true)}
+                </div>
+
+                <!-- Footer Bar with White Edit Pill -->
+                <div class="px-2 pt-2 pb-1 flex items-center justify-between border-t border-white/10">
+                    <div class="flex items-center gap-3 text-xs text-neutral-400">
+                        <span class="flex items-center gap-1"><i data-lucide="calendar-check" class="w-3.5 h-3.5"></i> ${Object.keys(state.attendance).length}</span>
+                        <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> ${state.colleagues.length}</span>
+                    </div>
+                    <button onclick="openMyProfileModal()" class="keep-white px-4 py-2 rounded-full bg-white text-neutral-950 text-xs font-bold flex items-center gap-1.5 hover:bg-neutral-200 active:scale-95 transition shadow-md">
+                        Edit Info <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            `;
+            safeCreateIcons();
+        }
+
+        function uploadMyQuickPhoto(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            readImageAsDataURL(file, (dataUrl) => {
+                state.profile.photo = dataUrl;
+                persistState();
+                renderMyProfile();
+                renderHeaderProfileCircle();
+                showToast('Profile photo updated', 'success');
+            });
+        }
+
+        function openMyProfileModal() {
+            myProfileDraftPhoto = state.profile.photo || '';
+            openModal('Edit My Profile', `
+                <form onsubmit="saveMyProfile(event)" class="space-y-3.5">
+                    <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+                        <div id="my-photo-preview" class="w-12 h-12 rounded-full bg-brand-600 text-white overflow-hidden flex items-center justify-center shrink-0 font-bold">
+                            ${myProfileDraftPhoto ? `<img src="${myProfileDraftPhoto}" class="w-full h-full object-cover">` : escapeHTML((state.profile.name || 'A')[0].toUpperCase())}
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs font-bold text-brand-600 cursor-pointer hover:underline block">
+                                Change Profile Photo
+                                <input type="file" accept="image/*" class="hidden" onchange="handleMyProfileImg(this)">
+                            </label>
+                            ${myProfileDraftPhoto ? `<button type="button" onclick="clearMyProfileImg()" class="text-[11px] text-rose-500 mt-0.5">Remove photo</button>` : `<span class="text-[11px] text-slate-400">Shown on header & profile card</span>`}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Your Name</label>
+                        <input type="text" id="mp-name" value="${escapeHTML(state.profile.name || '')}" required class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Designation / Bio</label>
+                        <textarea id="mp-bio" rows="2" class="w-full text-sm bg-slate-50 border border-slate-200 rounded-xl px-3 py-2">${escapeHTML(state.profile.bio || '')}</textarea>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="text-xs font-semibold text-slate-600">My Info (Auto-adjusts)</label>
+                            <button type="button" onclick="addDynamicInfoRow('my-info-rows')" class="text-[11px] font-bold text-brand-600 hover:underline">+ Add Field</button>
+                        </div>
+                        <div id="my-info-rows" class="space-y-2"></div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-full bg-brand-600 text-white text-xs font-semibold hover:bg-brand-700">Save My Profile</button>
+                </form>
+            `);
+
+            (state.profile.info || []).forEach(r => addDynamicInfoRow('my-info-rows', r.label, r.value));
+        }
+
+        function handleMyProfileImg(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+            readImageAsDataURL(file, (dataUrl) => {
+                myProfileDraftPhoto = dataUrl;
+                const prev = document.getElementById('my-photo-preview');
+                if (prev) prev.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover">`;
+            });
+        }
+
+        function clearMyProfileImg() {
+            myProfileDraftPhoto = '';
+            const prev = document.getElementById('my-photo-preview');
+            if (prev) prev.textContent = (state.profile.name || 'A')[0].toUpperCase();
+        }
+
+        function saveMyProfile(e) {
+            e.preventDefault();
+            const info = [];
+            document.querySelectorAll('#my-info-rows .info-editor-row').forEach(row => {
+                const label = row.querySelector('.info-lbl').value.trim();
+                const value = row.querySelector('.info-val').value.trim();
+                if (label || value) info.push({ label: label || 'Info', value });
+            });
+            state.profile.name = document.getElementById('mp-name').value.trim() || 'Admin';
+            state.profile.bio = document.getElementById('mp-bio').value.trim();
+            state.profile.photo = myProfileDraftPhoto;
+            state.profile.info = info;
+            persistState();
+            closeModal();
+            renderMyProfile();
+            renderHeaderProfileCircle();
+            showToast('Profile saved', 'success');
+        }
+
+        /* ==========================================================================
+           SETTINGS, EXPORT & RESET
+           ========================================================================== */
+
+        function renderSettings() {
+            document.getElementById('setting-name').value = state.profile.name || 'Admin';
+            document.getElementById('setting-weekly-off').value = String(state.profile.weeklyOff ?? 0);
+            document.getElementById('setting-shift-start').value = state.profile.shiftStart || '09:30';
+        }
+
+        function saveSettings() {
+            state.profile.name = document.getElementById('setting-name').value.trim() || 'Admin';
+            state.profile.weeklyOff = Number(document.getElementById('setting-weekly-off').value || 0);
+            state.profile.shiftStart = document.getElementById('setting-shift-start').value || '09:30';
+            persistState();
+            showToast('Preferences saved', 'success');
+        }
+
+        function exportDataJSON() {
+            try {
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `worked_backup_${TODAY_KEY}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Backup JSON downloaded', 'success');
+            } catch (err) {
+                showToast('Could not export backup', 'error');
+            }
+        }
+
+        function openResetConfirmModal() {
+            openModal('Reset Sample Data?', `
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-600 leading-relaxed">This will clear your saved records and restore the default sample data. Consider exporting a JSON backup first.</p>
+                    <div class="flex gap-2">
+                        <button onclick="closeModal()" class="flex-1 py-2.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">Cancel</button>
+                        <button onclick="confirmResetData()" class="flex-1 py-2.5 rounded-full bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700">Yes, Reset</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function confirmResetData() {
+            try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+            state = createDefaultState();
+            persistState();
+            closeModal();
+            switchView('home');
+            showToast('Sample data restored', 'success');
+        }
+
+        /* ==========================================================================
+           INITIALIZATION
+           ========================================================================== */
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme();
+            switchView('home');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User settings, profile card, and active punch session.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Authenticated Firebase UID" },
+        "displayName": { "type": "string", "description": "Staff member display name" },
+        "bio": { "type": "string", "description": "Designation or short bio" },
+        "photoDataUrl": { "type": "string", "description": "Compact base64 JPEG profile photo or empty string" },
+        "weeklyOff": { "type": "integer", "description": "Day of week off (0=Sun..6=Sat)" },
+        "shiftStart": { "type": "string", "description": "Office start time HH:mm" },
+        "darkMode": { "type": "boolean", "description": "AMOLED dark mode preference" },
+        "infoFields": { "type": "array", "description": "Bounded list of {label, value} profile info cards" },
+        "sessionDate": { "type": "string", "description": "Active punch session YYYY-MM-DD" },
+        "punchedIn": { "type": "boolean", "description": "Whether currently punched in" },
+        "sessionInTime": { "type": "string", "description": "Today punch-in HH:mm" },
+        "sessionOutTime": { "type": "string", "description": "Today punch-out HH:mm" },
+        "onBreak": { "type": "boolean", "description": "Whether currently on break" },
+        "breakStartMs": { "type": "integer", "description": "Epoch ms when current break started or 0" },
+        "totalBreakMins": { "type": "integer", "description": "Accumulated break minutes for sessionDate" },
+        "githubConfigUrl": { "type": "string", "description": "Legacy config string retained for backward compatibility" },
+        "githubConfigVersion": { "type": "string", "description": "Last synced config version" },
+        "sampleDataSeeded": { "type": "boolean", "description": "Legacy flag retained for backward compatibility" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp written with FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp written with FieldValue.serverTimestamp()" }
+      },
+      "required": [
+        "userId", "displayName", "bio", "photoDataUrl", "weeklyOff", "shiftStart", "darkMode",
+        "infoFields", "sessionDate", "punchedIn", "sessionInTime", "sessionOutTime",
+        "onBreak", "breakStartMs", "totalBreakMins", "githubConfigUrl", "githubConfigVersion",
+        "sampleDataSeeded", "createdAt", "updatedAt"
+      ]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Single day attendance status keyed by YYYY-MM-DD.",
+      "type": "object",
+      "properties": {
+        "dateKey": { "type": "string", "description": "Date key YYYY-MM-DD matching document ID" },
+        "status": {
+          "type": "string",
+          "enum": ["Present", "Leave", "Absent", "Holiday", "Offday", "Outstation", "Late", "Early_Going", "MissPunch"]
+        },
+        "leaveType": { "type": "string" },
+        "inTime": { "type": "string" },
+        "outTime": { "type": "string" },
+        "note": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["dateKey", "status", "leaveType", "inTime", "outTime", "note", "createdAt", "updatedAt"]
+    },
+    "OutOnWorkLog": {
+      "title": "OutOnWorkLog",
+      "description": "Official duty / out-on-work field visit record.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "mode": { "type": "string", "enum": ["Half Day", "Full Day", "Quarter Day"] },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "meetingWith": { "type": "string" },
+        "location": { "type": "string" },
+        "remarks": { "type": "string" },
+        "attachmentName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["date", "mode", "startTime", "endTime", "meetingWith", "location", "remarks", "attachmentName", "createdAt", "updatedAt"]
+    },
+    "ExpenseRecord": {
+      "title": "ExpenseRecord",
+      "description": "Personal or Headmaster recoverable expense entry.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "amount": { "type": "integer" },
+        "owner": { "type": "string", "enum": ["headmaster", "personal"] },
+        "recovered": { "type": "boolean" },
+        "note": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["date", "title", "category", "amount", "owner", "recovered", "note", "createdAt", "updatedAt"]
+    },
+    "FinanceRecord": {
+      "title": "FinanceRecord",
+      "description": "Salary, allowance, arrears, or bill income record.",
+      "type": "object",
+      "properties": {
+        "date": { "type": "string" },
+        "title": { "type": "string" },
+        "type": { "type": "string" },
+        "amount": { "type": "integer" },
+        "status": { "type": "string", "enum": ["received", "pending"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["date", "title", "type", "amount", "status", "createdAt", "updatedAt"]
+    },
+    "KeyDateRecord": {
+      "title": "KeyDateRecord",
+      "description": "Document validity and expiry reminder.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "validFrom": { "type": "string" },
+        "validUntil": { "type": "string" },
+        "note": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["title", "category", "validFrom", "validUntil", "note", "createdAt", "updatedAt"]
+    },
+    "DailyTask": {
+      "title": "DailyTask",
+      "description": "Office daily checklist item.",
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "done": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["text", "done", "createdAt", "updatedAt"]
+    },
+    "ColleagueRecord": {
+      "title": "ColleagueRecord",
+      "description": "Colleague contact card with custom auto-adjusting info fields.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "theme": { "type": "string", "enum": ["sky", "mint", "sunset", "lavender"] },
+        "photoDataUrl": { "type": "string" },
+        "bgPhotoDataUrl": { "type": "string" },
+        "infoFields": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "FieldValue.serverTimestamp()" }
+      },
+      "required": ["name", "role", "theme", "photoDataUrl", "bgPhotoDataUrl", "infoFields", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Authenticated user profile and punch session state."
+    },
+    "/users/{userId}/attendance/{dateKey}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "User attendance records keyed by YYYY-MM-DD."
+    },
+    "/users/{userId}/out_on_work/{logId}": {
+      "schema": { "$ref": "#/entities/OutOnWorkLog" },
+      "description": "User out-on-work field visit logs."
+    },
+    "/users/{userId}/expenses/{expenseId}": {
+      "schema": { "$ref": "#/entities/ExpenseRecord" },
+      "description": "User personal and Headmaster recoverable expenses."
+    },
+    "/users/{userId}/finances/{financeId}": {
+      "schema": { "$ref": "#/entities/FinanceRecord" },
+      "description": "User salary, allowances, arrears, and bills."
+    },
+    "/users/{userId}/reminders/{reminderId}": {
+      "schema": { "$ref": "#/entities/KeyDateRecord" },
+      "description": "User key document validity dates and expiry countdowns."
+    },
+    "/users/{userId}/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/DailyTask" },
+      "description": "User daily office tasks."
+    },
+    "/users/{userId}/colleagues/{colleagueId}": {
+      "schema": { "$ref": "#/entities/ColleagueRecord" },
+      "description": "User office colleagues directory cards."
+    }
+  }
+}

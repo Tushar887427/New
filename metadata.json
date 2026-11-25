@@ -1,0 +1,6 @@
+{
+  "name": "Work'ed",
+  "description": "Personal government office & staff hub for daily attendance, out-on-work logs, expenses, pay & finance, key dates, daily tasks, colleagues directory, Firebase cloud sync, and live GitHub remote config updates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
