@@ -15,18 +15,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK packages (API 36)
+      - name: Install Android SDK packages (API 36)
         run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls "$ANDROID_HOME" || true
           yes | sdkmanager --licenses || true
           sdkmanager "platforms;android-36" "build-tools;36.0.0" "platform-tools"
+          sdkmanager --list_installed
 
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
@@ -37,7 +37,14 @@ jobs:
         run: gradle wrapper --gradle-version 9.3.1
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: |
+          ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+          status=${PIPESTATUS[0]}
+          if [ $status -ne 0 ]; then
+            echo "::error::Build failed. Key errors:"
+            grep -iE "error:|e: |FAILED|What went wrong|Could not|Execution failed" build.log | head -n 40 || true
+            exit $status
+          fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
