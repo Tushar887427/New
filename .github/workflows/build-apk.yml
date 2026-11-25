@@ -48,16 +48,19 @@ jobs:
       - name: Build debug APK
         run: |
           set +e
+          echo "::warning::java: $(java -version 2>&1 | head -n 3 | tr '\n' ' ')"
+          echo "::warning::wrapper files: $(ls -la gradlew gradle/wrapper/ 2>&1 | tr '\n' ' ')"
+          ./gradlew --version 2>&1 | tee version.log
+          echo "::warning::gradlew --version exit=${PIPESTATUS[0]}"
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
           set -e
-          if [ $status -ne 0 ]; then
-            echo "::error::Build failed (exit $status). What went wrong:"
-            grep -A6 -i "What went wrong" build.log | head -n 20 || true
-            echo "::error::Key error lines:"
-            grep -iE "error:|e: |FAILED|FAILURE|Could not|Execution failed|Exception|Caused by" build.log | head -n 25 || true
-            exit $status
-          fi
+          echo "::warning::build exit=$status build.log bytes=$(wc -c < build.log 2>/dev/null || echo MISSING)"
+          echo "::warning::===== version.log ====="
+          cat version.log 2>/dev/null | sed 's/^/::warning::/'
+          echo "::warning::===== build.log tail ====="
+          tail -n 35 build.log 2>/dev/null | sed 's/^/::warning::/'
+          if [ $status -ne 0 ]; then exit $status; fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
