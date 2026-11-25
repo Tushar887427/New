@@ -47,11 +47,15 @@ jobs:
 
       - name: Build debug APK
         run: |
+          set +e
           ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
           status=${PIPESTATUS[0]}
+          set -e
           if [ $status -ne 0 ]; then
-            echo "::error::Build failed. Key errors:"
-            grep -iE "error:|e: |FAILED|What went wrong|Could not|Execution failed" build.log | head -n 40 || true
+            echo "::error::Build failed (exit $status). What went wrong:"
+            grep -A6 -i "What went wrong" build.log | head -n 20 || true
+            echo "::error::Key error lines:"
+            grep -iE "error:|e: |FAILED|FAILURE|Could not|Execution failed|Exception|Caused by" build.log | head -n 25 || true
             exit $status
           fi
 
